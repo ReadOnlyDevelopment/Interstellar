@@ -1,0 +1,14 @@
+{
+	"pageNumber": 0,
+	"menuItem": "minecraft:glass_pane",
+	"address": "test.menu",
+	"title": "Test Menu",
+	"content": [
+		{
+			"type": "text",
+			"mcStyleCodes": "",
+			"unlocalizedID": "Test Text yo",
+			"textColor": 23423423
+		}
+	]
+}

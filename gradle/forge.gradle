@@ -1,0 +1,39 @@
+repositories {
+	mavenCentral()
+	removeIf { it.url.host == 'files.minecraftforge.net' }
+	maven { url "https://maven.minecraftforge.net/" }
+}
+
+dependencies {
+	compileOnly "org.projectlombok:lombok:${lombok_version}"
+	annotationProcessor "org.projectlombok:lombok:${lombok_version}"
+
+	testCompileOnly "org.projectlombok:lombok:${lombok_version}"
+	testAnnotationProcessor "org.projectlombok:lombok:${lombok_version}"
+}
+
+minecraft {
+	version = "${minecraft_version}-${forge_version}"
+	mappings = "${mappings_version}"
+	runDir = "run"
+	replace '${version}', version
+	replace '${fingerprint}', project.findProperty('signSHA1')
+	replaceIn "${info_class}.java"
+}
+
+processResources {
+	inputs.property "version", project.version
+	inputs.property "mcversion", project.minecraft.version
+
+	from(sourceSets.main.resources.srcDirs) {
+		include 'mcmod.info'
+
+		expand 'version':project.version, 'mcversion':project.minecraft.version
+	}
+
+	from(sourceSets.main.resources.srcDirs) {
+		exclude 'mcmod.info'
+	}
+	
+	rename '(.+_at.cfg)', 'META-INF/$1'
+}

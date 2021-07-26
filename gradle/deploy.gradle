@@ -1,0 +1,60 @@
+apply plugin: 'maven-publish'
+
+configurations {
+	deployerJars
+}
+
+dependencies {
+	deployerJars "org.apache.maven.wagon:wagon-ftp:2.2"
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			groupId = project.group
+			version = project.version
+			artifactId = project.archivesBaseName
+			from components.java
+			artifact devJar
+			artifact sourceJar
+			artifact javadocJar
+
+			pom {
+				name = project.archivesBaseName
+				packaging = 'jar'
+				description = 'Core Library & API'
+				url = 'https://github.com/ReadOnlyDevelopment/Interstellar'
+	
+				licenses {
+					license {
+						name = 'MIT'
+						url = 'https://raw.githubusercontent.com/ReadOnlyDevelopment/Interstellar/master/LICENSE'
+					}
+				}
+				
+				scm {
+					url = 'https://github.com/ReadOnlyDevelopment/Interstellar'
+					connection = 'scm:git:git://github.com/ReadOnlyDevelopment/Interstellar.git'
+					developerConnection = 'scm:git:git@github.com:ReadOnlyDevelopment/Interstellar.git'
+				}
+	
+				issueManagement {
+					system = 'github'
+					url = 'https://github.com/ReadOnlyDevelopment/Interstellar/issues'
+				}
+	
+				developers {
+					developer {
+						id = 'romvoid95'
+						name = 'rom'
+					}
+				}
+			}
+		}
+	}
+	repositories {
+		mavenLocal()
+	}
+}	
+
+publish.dependsOn build

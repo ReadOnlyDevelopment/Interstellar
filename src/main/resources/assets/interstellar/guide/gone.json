@@ -1,0 +1,14 @@
+{
+	"pageNumber": 1,
+	"menuItem": "minecraft:iron_bars",
+	"address": "test.menu2",
+	"title": "Test Menu 2",
+	"content": [
+		{
+			"type": "text",
+			"mcStyleCodes": "",
+			"unlocalizedID": "Test Text yo 2",
+			"textColor": 23423423
+		}
+	]
+}
