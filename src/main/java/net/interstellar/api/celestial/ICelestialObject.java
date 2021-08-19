@@ -24,9 +24,14 @@
 
 package net.interstellar.api.celestial;
 
-import net.interstellar.lib.celestial.data.Size;
+import net.interstellar.lib.celestial.data.Mass;
+import net.interstellar.lib.celestial.data.Radius;
 
 public interface ICelestialObject {
 
-	public Size getMassAndRadius();
+	public Mass getMass();
+
+	public Radius getRadius();
+
+	public double getShwartzchildRadius();
 }

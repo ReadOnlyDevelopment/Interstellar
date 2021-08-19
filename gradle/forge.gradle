@@ -5,11 +5,11 @@ repositories {
 }
 
 dependencies {
-	compileOnly "org.projectlombok:lombok:${lombok_version}"
-	annotationProcessor "org.projectlombok:lombok:${lombok_version}"
-
-	testCompileOnly "org.projectlombok:lombok:${lombok_version}"
-	testAnnotationProcessor "org.projectlombok:lombok:${lombok_version}"
+	compileOnly 'org.projectlombok:lombok:1.18.20'
+	annotationProcessor 'org.projectlombok:lombok:1.18.20'
+	
+	testCompileOnly 'org.projectlombok:lombok:1.18.20'
+	testAnnotationProcessor 'org.projectlombok:lombok:1.18.20'
 }
 
 minecraft {

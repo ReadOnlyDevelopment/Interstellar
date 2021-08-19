@@ -25,10 +25,9 @@
 package net.interstellar.api.celestial;
 
 import java.util.List;
-
 import net.interstellar.lib.celestial.data.Temperature;
-import net.interstellar.lib.celestial.enums.EnumPlanetType;
-import net.interstellar.lib.celestial.enums.EnumTPHClass;
+import net.interstellar.lib.celestial.enums.HabitabilityClassification;
+import net.interstellar.lib.celestial.enums.PlanetType;
 
 public interface IExoplanet extends ICelestialObject {
 
@@ -40,8 +39,10 @@ public interface IExoplanet extends ICelestialObject {
 
 	IMoon[] getMoons();
 
-	EnumPlanetType getPlanetType();
+	PlanetType getPlanetType();
 
-	EnumTPHClass getHabitabilityClassification();
+	HabitabilityClassification getHabitabilityClassification();
+
+	double getSurfaceGravity();
 
 }

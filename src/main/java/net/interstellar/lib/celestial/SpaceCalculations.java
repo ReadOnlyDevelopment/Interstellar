@@ -20,7 +20,6 @@
 package net.interstellar.lib.celestial;
 
 import java.util.Random;
-
 import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody;
 import micdoodle8.mods.galacticraft.api.galaxies.IChildBody;
 import micdoodle8.mods.galacticraft.api.galaxies.Moon;
@@ -94,9 +93,9 @@ public class SpaceCalculations {
 	 * @return Radius in solar radii.
 	 */
 	public static double schwartzchildRadius(double M) {
-		double r = (2.0 * AstronomicalConstants.GRAVITATIONAL_CONSTANT * M * AstronomicalConstants.SUN_MASS) / (AstronomicalConstants.SPEED_OF_LIGHT * AstronomicalConstants.SPEED_OF_LIGHT);
+		double r = (2.0 * Physics.GRAVITATIONAL_CONSTANT * M * Physics.SUN_MASS) / (Physics.SPEED_OF_LIGHT * Physics.SPEED_OF_LIGHT);
 
-		return r / (1000.0 * AstronomicalConstants.SUN_RADIUS);
+		return r / (1000.0 * Physics.SUN_RADIUS);
 	}
 
 	/**
@@ -127,44 +126,7 @@ public class SpaceCalculations {
 	 * @return Radius in solar radii.
 	 */
 	public static double getStarRadius(double luminosity, double temperature) {
-		return Math.sqrt((luminosity * AstronomicalConstants.SUN_LUMINOSITY) / (4.0 * Math.PI * AstronomicalConstants.STEFAN_BOLTZMANN_CONSTANT * Math.pow(temperature, 4.0))) / (AstronomicalConstants.SUN_RADIUS * 1000.0);
-	}
-
-	/**
-	 * Obtains star luminosity.
-	 *
-	 * @param radius      Radius in solar units.
-	 * @param temperature Temperature in K.
-	 * @return Luminosity in solar units.
-	 */
-	public static double getStarLuminosity(double radius, double temperature) {
-		double luminosity = Math.pow(radius * AstronomicalConstants.SUN_RADIUS * 1000.0, 2.0) * (4.0 * Math.PI * AstronomicalConstants.STEFAN_BOLTZMANN_CONSTANT * Math.pow(temperature, 4.0));
-
-		return luminosity / AstronomicalConstants.SUN_LUMINOSITY;
-	}
-
-	/**
-	 * Obtains the surface gravity of a star.
-	 * 
-	 * @param mass   Mass in solar masses.
-	 * @param radius Radius in solar radii.
-	 * @return Gravity in m/s^2.
-	 */
-	public static double getStarSurfaceGravity(double mass, double radius) {
-		double g = (AstronomicalConstants.GRAVITATIONAL_CONSTANT * mass * AstronomicalConstants.SUN_MASS) / (Math.pow(radius * AstronomicalConstants.SUN_RADIUS * 1000.0, 2.0));
-		return g;
-	}
-
-	/**
-	 * Obtains the surface gravity of a star.
-	 * 
-	 * @param mass   Mass in solar masses.
-	 * @param radius Radius in solar radii.
-	 * @return Gravity in m/s^2.
-	 */
-	public static double getPlanetSurfaceGravity(double mass, double radius) {
-		double g = (AstronomicalConstants.GRAVITATIONAL_CONSTANT * (mass * AstronomicalConstants.EARTH_RADIUS)) / (Math.pow(radius * AstronomicalConstants.EARTH_RADIUS, 2.0));
-		return g;
+		return Math.sqrt((luminosity * Physics.SUN_LUMINOSITY) / (4.0 * Math.PI * Physics.STEFAN_BOLTZMANN_CONSTANT * Math.pow(temperature, 4.0))) / (Physics.SUN_RADIUS * 1000.0);
 	}
 
 	/**

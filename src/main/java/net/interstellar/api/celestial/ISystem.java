@@ -28,12 +28,6 @@ import java.util.List;
 
 public interface ISystem {
 
-	IHabitableZone getHabitableZone();
-
-	List<IStar> getStarsList();
-
-	IStar[] getStars();
-
 	List<IExoplanet> getPlanetsList();
 
 	IExoplanet[] getPlanets();

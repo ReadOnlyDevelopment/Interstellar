@@ -22,7 +22,7 @@ package net.interstellar.lib.compat;
 import java.util.List;
 import java.util.Optional;
 
-import net.interstellar.api.version.Version;
+import net.interstellar.lib.version.Version;
 import net.minecraftforge.fml.common.Loader;
 import net.minecraftforge.fml.common.ModContainer;
 

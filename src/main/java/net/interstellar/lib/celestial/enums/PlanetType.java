@@ -20,10 +20,11 @@
 package net.interstellar.lib.celestial.enums;
 
 import net.interstellar.api.celestial.IExoplanet;
-import net.interstellar.lib.celestial.data.Size;
+import net.interstellar.lib.celestial.data.Mass;
+import net.interstellar.lib.celestial.data.Radius;
 import net.minecraft.util.IStringSerializable;
 
-public enum EnumPlanetType implements IStringSerializable {
+public enum PlanetType implements IStringSerializable {
 
 	/**
 	 * <b>Asteroidan</b><br>
@@ -107,7 +108,7 @@ public enum EnumPlanetType implements IStringSerializable {
 
 	private String name;
 
-	private EnumPlanetType(String name) {
+	private PlanetType(String name) {
 		this.name = name;
 	}
 
@@ -116,8 +117,8 @@ public enum EnumPlanetType implements IStringSerializable {
 		return name;
 	}
 
-	public static EnumPlanetType getPlanetType(IExoplanet exoplanet) {
-		EnumPlanetType type = null;
+	public static PlanetType getPlanetType(IExoplanet exoplanet) {
+		PlanetType type = null;
 		switch (applyData(exoplanet)) {
 			case 1:
 				type = ASTEROIDAN;
@@ -148,20 +149,22 @@ public enum EnumPlanetType implements IStringSerializable {
 	}
 
 	private static int applyData(IExoplanet exoplanet) {
-		final Size size = exoplanet.getMassAndRadius();
-		if (size.isMassBetween(0, 0.00001) && size.isRadiusBetween(0, 0.03)) {
+		final Mass mass = exoplanet.getMass().toMassUnit(Mass.Unit.EARTH);
+		final Radius radius = exoplanet.getRadius().toRadiusUnit(Radius.Unit.EARTH);
+
+		if (mass.isBetween(0, 0.00001) && radius.isBetween(0, 0.03)) {
 			return 1;
-		} else if (size.isMassBetween(0.00001, 0.1) && size.isRadiusBetween(0.03, 0.7)) {
+		} else if (mass.isBetween(0.00001, 0.1) && radius.isBetween(0.03, 0.7)) {
 			return 2;
-		} else if (size.isMassBetween(0.1, 0.5) && size.isRadiusBetween(0.5, 1.2)) {
+		} else if (mass.isBetween(0.1, 0.5) && radius.isBetween(0.5, 1.2)) {
 			return 3;
-		} else if (size.isMassBetween(0.5, 2) && size.isRadiusBetween(0.8, 1.9)) {
+		} else if (mass.isBetween(0.5, 2) && radius.isBetween(0.8, 1.9)) {
 			return 4;
-		} else if (size.isMassBetween(2, 10) && size.isRadiusBetween(1.3, 3.3)) {
+		} else if (mass.isBetween(2, 10) && radius.isBetween(1.3, 3.3)) {
 			return 5;
-		} else if (size.isMassBetween(10, 50) && size.isRadiusBetween(2.1, 5.7)) {
+		} else if (mass.isBetween(10, 50) && radius.isBetween(2.1, 5.7)) {
 			return 6;
-		} else if (size.isMassBetween(50, 5000) && size.isRadiusBetween(3.5, 27)) {
+		} else if (mass.isBetween(50, 5000) && radius.isBetween(3.5, 27)) {
 			return 7;
 		} else {
 			return 0;

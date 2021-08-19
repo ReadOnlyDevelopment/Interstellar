@@ -19,36 +19,64 @@
 
 package net.interstellar.lib.celestial.objects;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-
-import lombok.Builder;
-import lombok.Getter;
+import com.google.common.collect.Lists;
+import lombok.Data;
+import micdoodle8.mods.galacticraft.api.galaxies.Planet;
+import micdoodle8.mods.galacticraft.api.world.AtmosphereInfo;
+import micdoodle8.mods.galacticraft.api.world.EnumAtmosphericGas;
 import net.interstellar.api.celestial.IExoplanet;
 import net.interstellar.api.celestial.IMoon;
 import net.interstellar.api.celestial.IStar;
-import net.interstellar.lib.celestial.data.Size;
+import net.interstellar.lib.celestial.Physics;
+import net.interstellar.lib.celestial.data.Mass;
+import net.interstellar.lib.celestial.data.Radius;
 import net.interstellar.lib.celestial.data.Temperature;
-import net.interstellar.lib.celestial.enums.EnumPlanetType;
-import net.interstellar.lib.celestial.enums.EnumTPHClass;
+import net.interstellar.lib.celestial.enums.HabitabilityClassification;
+import net.interstellar.lib.celestial.enums.PlanetType;
+import net.minecraft.util.ResourceLocation;
+import net.minecraft.world.WorldProvider;
+import net.minecraft.world.biome.Biome;
 
-@Builder(builderClassName = "Builder", builderMethodName = "create")
-@Getter
-public class Exoplanet implements IExoplanet {
+@Data
+public class Exoplanet extends Planet implements IExoplanet {
 
-	private String		designatedName;
-	private Size		massAndRadius;
-	private Temperature	temperature;
-	private float		distance;
+	private Mass				mass;
+	private Radius				radius;
+	private Temperature			temperature;
+	private ExoStar				hostStar;
+	private final List<IMoon>	moons	= new ArrayList<>();
 
-	@lombok.Builder.Default
-	private IStar				hostStar	= null;
-	private final List<IMoon>	moons		= new ArrayList<>();
+	public Exoplanet(Exoplanet.Builder builder) {
+		super(builder.planetName);
+		this.setParentSolarSystem(builder.parentSolarSystem);
+		this.setRelativeSize(builder.relativeSize);
+		this.setRelativeDistanceFromCenter(builder.distance);
+		this.setRelativeOrbitTime(builder.relativeOrbitTime);
+		this.setPhaseShift(builder.phaseShift);
+		this.setTierRequired(builder.tierRequired);
+		this.setBodyIcon(builder.icon);
+		this.setAtmosphere(builder.getAtmosphereInfo());
+		builder.gasses.forEach(e -> this.atmosphereComponent(e));
+		if (builder.isReachable) {
+			this.setDimensionInfo(builder.dimensionID, builder.providerClass);
+			this.setBiomeInfo(builder.biomes);
+		}
+		this.mass = builder.mass;
+		this.radius = builder.radius;
+		this.temperature = builder.temperature;
+		this.hostStar = builder.parentSolarSystem.getMainStar();
+	}
 
 	@Override
-	public Size getMassAndRadius() {
-		return massAndRadius;
+	public Mass getMass() {
+		return mass;
+	}
+
+	@Override
+	public Radius getRadius() {
+		return radius;
 	}
 
 	@Override
@@ -76,19 +104,156 @@ public class Exoplanet implements IExoplanet {
 	}
 
 	@Override
-	public EnumPlanetType getPlanetType() {
-		return EnumPlanetType.getPlanetType(this);
+	public PlanetType getPlanetType() {
+		return PlanetType.getPlanetType(this);
 	}
 
 	@Override
-	public EnumTPHClass getHabitabilityClassification() {
-		return null;
+	public HabitabilityClassification getHabitabilityClassification() {
+		return HabitabilityClassification.getTPHClassification(this);
 	}
 
-	static class Builder {
+	@Override
+	public double getSurfaceGravity() {
+		getMass().toMassUnit(Mass.Unit.ABSOLUTE);
+		double mass = getMass().getValue();
+		getMass().toMassUnit(Mass.Unit.EARTH);
+		getRadius().toRadiusUnit(Radius.Unit.ABSOLUTE);
+		double radius = getRadius().getValue();
+		getRadius().toRadiusUnit(Radius.Unit.EARTH);
+		return (Physics.GRAVITATIONAL_CONSTANT * mass) / Math.pow(radius, 2.0);
+	}
 
-		public Builder distance(double distance) {
-			this.distance = BigDecimal.valueOf(distance).floatValue();
+	@Override
+	public double getShwartzchildRadius() {
+		return 0;
+	}
+
+	public static class Builder {
+
+		private String							planetName;
+		private float							relativeSize;
+		private ScalableDistance				distance;
+		private float							relativeOrbitTime;
+		private float							phaseShift;
+		private int								dimensionID;
+		private Class<? extends WorldProvider>	providerClass;
+		private int								tierRequired;
+		private boolean							enableRain	= false;
+		private boolean							isCorrosive	= false;
+		private float							temp		= 0.0F;
+		private float							windLevel	= 0.0F;
+		private float							density		= 0.0F;
+		private Biome[]							biomes;
+		private ResourceLocation				icon;
+		private ExoStarSystem					parentSolarSystem;
+		private List<EnumAtmosphericGas>		gasses;
+		private boolean							isReachable	= true;
+		private Mass							mass;
+		private Radius							radius;
+		private Temperature						temperature;
+
+		public Builder name(String planetName) {
+			this.planetName = planetName;
+			return this;
+		}
+
+		public Builder mass(double mass) {
+			this.mass = new Mass(mass, Mass.Unit.EARTH);
+			return this;
+		}
+
+		public Builder radius(double radius) {
+			this.radius = new Radius(radius, Radius.Unit.EARTH);
+			return this;
+		}
+
+		public Builder size(float relativeSize) {
+			this.relativeSize = relativeSize;
+			return this;
+		}
+
+		public Builder distanceFromStar(double distance) {
+			this.distance = new ScalableDistance((float) distance, (float) distance);
+			return this;
+		}
+
+		public Builder orbitTime(float relativeOrbitTime) {
+			this.relativeOrbitTime = relativeOrbitTime;
+			return this;
+		}
+
+		public Builder phaseShift(float phaseShift) {
+			this.phaseShift = phaseShift;
+			return this;
+		}
+
+		public Builder dimensionId(int dimensionID) {
+			this.dimensionID = dimensionID;
+			return this;
+		}
+
+		public Builder worldProvider(Class<? extends WorldProvider> providerClass) {
+			this.providerClass = providerClass;
+			return this;
+		}
+
+		public Builder tier(int tierRequired) {
+			this.tierRequired = tierRequired;
+			return this;
+		}
+
+		public Builder enableRain() {
+			this.enableRain = true;
+			return this;
+		}
+
+		public Builder enableCorrosion() {
+			this.isCorrosive = true;
+			return this;
+		}
+
+		public Builder temperature(double temp) {
+			this.temperature = new Temperature(temp);
+			return this;
+		}
+
+		public Builder windLevel(double windLevel) {
+			this.windLevel = (float) windLevel;
+			return this;
+		}
+
+		public Builder density(double density) {
+			this.density = (float) density;
+			return this;
+		}
+
+		private AtmosphereInfo getAtmosphereInfo() {
+			return new AtmosphereInfo(null, this.enableRain, this.isCorrosive, this.temp, this.windLevel, this.density);
+		}
+
+		public Builder biomes(Biome... biomes) {
+			this.biomes = biomes;
+			return this;
+		}
+
+		public Builder icon(ResourceLocation celestialBodyIcon) {
+			this.icon = celestialBodyIcon;
+			return this;
+		}
+
+		public Builder solarsystem(ExoStarSystem parentSolarSystem) {
+			this.parentSolarSystem = parentSolarSystem;
+			return this;
+		}
+
+		public Builder atmosphereGasses(EnumAtmosphericGas... gasses) {
+			this.gasses = Lists.newArrayList(gasses);
+			return this;
+		}
+
+		public Builder setUnreachable() {
+			this.isReachable = false;
 			return this;
 		}
 	}

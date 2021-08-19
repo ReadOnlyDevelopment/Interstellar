@@ -34,7 +34,7 @@ import net.interstellar.lib.utils.data.ImmutableDataPair;
  *
  * @author ROMVoid
  */
-public enum EnumTPHClass {
+public enum HabitabilityClassification {
 
 	//@formatter:off
 	HP
@@ -77,7 +77,7 @@ public enum EnumTPHClass {
 	private ImmutableDataPair<String, String>	descriptor;
 	private ImmutableDataPair<Integer, Integer>	temperateRange;
 
-	EnumTPHClass(ImmutableDataPair<String, String> descriptor, ImmutableDataPair<Integer, Integer> temperateRange) {
+	HabitabilityClassification(ImmutableDataPair<String, String> descriptor, ImmutableDataPair<Integer, Integer> temperateRange) {
 		this.descriptor = descriptor;
 		this.temperateRange = temperateRange;
 	}
@@ -98,8 +98,8 @@ public enum EnumTPHClass {
 		return descriptor.getSecond();
 	}
 
-	public static EnumTPHClass getTPHClassification(IExoplanet exoplanet) {
-		EnumTPHClass clazz = null;
+	public static HabitabilityClassification getTPHClassification(IExoplanet exoplanet) {
+		HabitabilityClassification clazz = null;
 		switch (applyData(exoplanet)) {
 			case 1:
 				clazz = HP;

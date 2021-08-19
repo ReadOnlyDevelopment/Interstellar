@@ -24,9 +24,17 @@
 
 package net.interstellar.api.celestial;
 
+import net.interstellar.lib.celestial.data.Temperature;
+
 public interface IStar extends ICelestialObject {
 
-	int getSurfaceTemperature();
+	IHabitableZone getHabitableZone();
+
+	Temperature getSurfaceTemperature();
 
 	String getSpectralClassifcation();
+
+	double getLuminosity();
+
+	double getSurfaceGravity();
 }

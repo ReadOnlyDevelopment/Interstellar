@@ -22,7 +22,7 @@
  * SOFTWARE.
  */
 
-package net.interstellar.api.version;
+package net.interstellar.lib.version;
 
 public class VersionException extends RuntimeException {
 

@@ -1,7 +1,10 @@
 buildscript {
 	repositories {
 		mavenCentral()
-		maven { url = "https://files.minecraftforge.net/maven" }
+		maven {
+			name = "forge"
+			url = "https://files.minecraftforge.net/maven"
+		}
 	}
 	dependencies {
 		classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
@@ -49,11 +52,11 @@ System.out.println('- Version:     ' + "${version}".toString())
 System.out.println()
 System.out.println()
 
-apply from: 'gradle/forge.gradle'
 apply from: 'gradle/development.gradle'
 apply from: 'gradle/deploy.gradle'
 apply from: 'gradle/versioning.gradle'
 apply from: 'gradle/license.gradle'
+apply from: 'gradle/forge.gradle'
 apply from: 'https://raw.githubusercontent.com/ReadOnlyDevelopment/gradle/galacticraft/dev-latest.gradle'
 
 String getBuildNumber() {

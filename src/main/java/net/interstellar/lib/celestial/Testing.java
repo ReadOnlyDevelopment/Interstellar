@@ -19,9 +19,11 @@
 
 package net.interstellar.lib.celestial;
 
+import net.interstellar.lib.celestial.objects.Exoplanet;
+
 public class Testing {
 
 	public static void go() {
-
+		Exoplanet exoplanet = new Exoplanet.Builder();
 	}
 }

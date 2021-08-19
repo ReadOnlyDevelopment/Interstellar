@@ -1,0 +1,116 @@
+package net.interstellar.lib.celestial.objects;
+
+import lombok.Data;
+import micdoodle8.mods.galacticraft.api.galaxies.Star;
+import net.interstellar.api.celestial.IHabitableZone;
+import net.interstellar.api.celestial.IStar;
+import net.interstellar.lib.celestial.Physics;
+import net.interstellar.lib.celestial.data.Mass;
+import net.interstellar.lib.celestial.data.Radius;
+import net.interstellar.lib.celestial.data.Temperature;
+import net.minecraft.util.ResourceLocation;
+
+@Data
+public class ExoStar extends Star implements IStar {
+
+	private final double	gConst		= Physics.GRAVITATIONAL_CONSTANT;
+	private final double	sMass		= Physics.SUN_MASS;
+	private final double	sLum		= Physics.SUN_LUMINOSITY;
+	private final double	sRadi		= Physics.SUN_RADIUS;
+	private final double	sBlzConst	= Physics.STEFAN_BOLTZMANN_CONSTANT;
+	private final double	spdLight	= Physics.SPEED_OF_LIGHT;
+
+	private Mass			mass;
+	private Radius			radius;
+	private Temperature		temperature;
+	private String			spectralClassifcation;
+	private IHabitableZone	habitableZone;
+
+	private ExoStar(Builder builder) {
+		super(builder.starName);
+		this.setRelativeSize(builder.size);
+		this.setTierRequired(-1);
+		this.setBodyIcon(builder.icon);
+		this.setParentSolarSystem(builder.starSystem);
+	}
+
+	@Override
+	public Mass getMass() {
+		return mass;
+	}
+
+	@Override
+	public Radius getRadius() {
+		return radius;
+	}
+
+	@Override
+	public Temperature getSurfaceTemperature() {
+		return temperature;
+	}
+
+	@Override
+	public String getSpectralClassifcation() {
+		return spectralClassifcation;
+	}
+
+	@Override
+	public IHabitableZone getHabitableZone() {
+		return null;
+	}
+
+	@Override
+	public double getLuminosity() {
+		getRadius().toRadiusUnit(Radius.Unit.ABSOLUTE);
+		double radius = getRadius().getValue();
+		getRadius().toRadiusUnit(Radius.Unit.SOLAR);
+		return Math.pow(radius * sRadi * 1000, 2) * (4 * Math.PI * sBlzConst * Math.pow(temperature.getValue(), 4));
+	}
+
+	@Override
+	public double getSurfaceGravity() {
+		getRadius().toRadiusUnit(Radius.Unit.ABSOLUTE);
+		double radius = getRadius().getValue();
+		getRadius().toRadiusUnit(Radius.Unit.SOLAR);
+		return Math.pow(radius * sRadi * 1000, 2) * (4 * Math.PI * sBlzConst * Math.pow(temperature.getValue(), 4));
+	}
+
+	@Override
+	public double getShwartzchildRadius() {
+		return (2.0 * gConst * getMass().getValue() * sMass / (spdLight * spdLight)) / (1000.0 * sRadi);
+	}
+
+	public static final class Builder {
+		private String				starName;
+		private float				size;
+		private ResourceLocation	icon;
+		private ExoStarSystem		starSystem;
+
+		private Builder() {
+		}
+
+		public Builder name(String starName) {
+			this.starName = starName;
+			return this;
+		}
+
+		public Builder size(float size) {
+			this.size = size;
+			return this;
+		}
+
+		public Builder icon(ResourceLocation icon) {
+			this.icon = icon;
+			return this;
+		}
+
+		public Builder starSystem(ExoStarSystem starSystem) {
+			this.starSystem = starSystem;
+			return this;
+		}
+
+		public ExoStar build() {
+			return new ExoStar(this);
+		}
+	}
+}
