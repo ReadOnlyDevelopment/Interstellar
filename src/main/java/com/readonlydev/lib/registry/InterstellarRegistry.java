@@ -43,6 +43,7 @@ import com.readonlydev.api.repcie.IRecipeProcessor;
 import com.readonlydev.lib.block.BlockSubtype;
 import com.readonlydev.lib.item.ItemBlockSubtype;
 import com.readonlydev.lib.recipe.RecipeBuilder;
+import com.readonlydev.lib.world.biome.ExoplanetBiome;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -53,6 +54,7 @@ import net.minecraft.block.Block;
 import net.minecraft.client.renderer.block.model.ModelBakery;
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.renderer.tileentity.TileEntitySpecialRenderer;
+import net.minecraft.command.ICommand;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.enchantment.Enchantment;
 import net.minecraft.entity.Entity;
@@ -74,6 +76,7 @@ import net.minecraft.world.storage.loot.functions.LootFunction;
 import net.minecraft.world.storage.loot.functions.LootFunctionManager;
 import net.minecraft.world.storage.loot.properties.EntityProperty;
 import net.minecraft.world.storage.loot.properties.EntityPropertyManager;
+import net.minecraftforge.client.ClientCommandHandler;
 import net.minecraftforge.client.event.ModelRegistryEvent;
 import net.minecraftforge.client.model.ModelLoader;
 import net.minecraftforge.common.MinecraftForge;
@@ -103,21 +106,25 @@ public class InterstellarRegistry {
 	private static final Pattern PATTERN_REGISTRY_NAME = Pattern.compile("[^a-z0-9_]+");
 
 	@Getter
-	private final List<Block>	blocks	= NonNullList.create();
+	private final List<Block> BLOCKS = NonNullList.create();
 	@Getter
-	private final List<Item>	items	= NonNullList.create();
+	private final List<Item> ITEMS = NonNullList.create();
 	@Getter
-	private final List<Fluid>	fluids	= NonNullList.create();
+	private final List<Fluid> FLUIDS = NonNullList.create();
+	@Getter
+	private final List<IFluidBlock> FLUID_BLOCKS = NonNullList.create();
+	@Getter
+	private final List<Biome> BIOMES = NonNullList.create();
 
 	private final List<IRecipeProcessor> recipeAdders = NonNullList.create();
 
-	private final List<IInitProcessor>															phasedInitializers		= new ArrayList<>();
-	private final Map<Class<? extends IForgeRegistryEntry<?>>, Consumer<InterstellarRegistry>>	registrationHandlers	= new HashMap<>();
+	private final List<IInitProcessor> phasedInitializers = new ArrayList<>();
+	private final Map<Class<? extends IForgeRegistryEntry<?>>, Consumer<InterstellarRegistry>> registrationHandlers = new HashMap<>();
 
-	private Object			mod;
-	private final Logger	logger;
-	private final String	modId;
-	private final String	resourcePrefix;
+	private Object mod;
+	private final Logger logger;
+	private final String modId;
+	private final String resourcePrefix;
 
 	@Nonnull
 	private final RecipeBuilder recipes;
@@ -145,9 +152,11 @@ public class InterstellarRegistry {
 	}
 
 	/**
-	 * Add a phased initializer, which has preInit, init, and postInit methods which InterstellarRegistry will call automatically.
+	 * Add a phased initializer, which has preInit, init, and postInit methods which
+	 * InterstellarRegistry will call automatically.
 	 * <p>
-	 * This method should be called during <em>pre-init</em> in the proper proxy, <em>before</em> calling the InterstellarRegistry's preInit method.
+	 * This method should be called during <em>pre-init</em> in the proper proxy,
+	 * <em>before</em> calling the InterstellarRegistry's preInit method.
 	 * </p>
 	 *
 	 * @param instance Your initializer (singleton design is recommended)
@@ -157,7 +166,9 @@ public class InterstellarRegistry {
 	}
 
 	/**
-	 * Adds a function that will be called when it is time to register objects for a certain class. For example, adding a handler for class {@link Item} will call the function during {@link RegistryEvent.Register} for type {@link Item}.
+	 * Adds a function that will be called when it is time to register objects for a
+	 * certain class. For example, adding a handler for class {@link Item} will call
+	 * the function during {@link RegistryEvent.Register} for type {@link Item}.
 	 * <p>
 	 * This method should be called during <em>pre-init</em> in the proper proxy.
 	 * </p>
@@ -166,7 +177,8 @@ public class InterstellarRegistry {
 	 * @param registryClass    The registry object class
 	 * @throws RuntimeException if a handler for the class is already registered
 	 */
-	public void addRegistrationHandler(Consumer<InterstellarRegistry> registerFunction, Class<? extends IForgeRegistryEntry<?>> registryClass) throws RuntimeException {
+	public void addRegistrationHandler(Consumer<InterstellarRegistry> registerFunction,
+			Class<? extends IForgeRegistryEntry<?>> registryClass) throws RuntimeException {
 		if (this.registrationHandlers.containsKey(registryClass)) {
 			throw new RuntimeException("Registration handler for class " + registryClass + " already registered!");
 		}
@@ -189,10 +201,11 @@ public class InterstellarRegistry {
 	}
 
 	/**
-	 * Register a Block. Its name (registry key/name) must be provided. Uses a new ItemBlockSL.
+	 * Register a Block. Its name (registry key/name) must be provided. Uses a new
+	 * ItemBlockSL.
 	 */
-	public <T extends Block> T registerBlock(T block, String key) {
-		return registerBlock(block, key, defaultItemBlock(block));
+	public <T extends Block> T register(T block, String key) {
+		return register(block, key, defaultItemBlock(block));
 	}
 
 	@Nonnull
@@ -207,8 +220,8 @@ public class InterstellarRegistry {
 	/**
 	 * Register a Block. Its name registry name and ItemBlock must be provided.
 	 */
-	public <T extends Block> T registerBlock(T block, String key, ItemBlock itemBlock) {
-		blocks.add(block);
+	public <T extends Block> T register(T block, String key, ItemBlock itemBlock) {
+		BLOCKS.add(block);
 		block.setUnlocalizedName(modId + "." + key);
 
 		validateRegistryName(key);
@@ -238,19 +251,24 @@ public class InterstellarRegistry {
 	// Fluid
 
 	/**
-	 * Create a {@link Fluid} and its {@link IFluidBlock}, or use the existing ones if a fluid has already been registered with the same name.
+	 * Create a {@link Fluid} and its {@link IFluidBlock}, or use the existing ones
+	 * if a fluid has already been registered with the same name.
 	 *
 	 * @param name                 The name of the fluid
 	 * @param hasFlowIcon          Does the fluid have a flow icon?
-	 * @param fluidPropertyApplier A function that sets the properties of the {@link Fluid}
+	 * @param fluidPropertyApplier A function that sets the properties of the
+	 *                             {@link Fluid}
 	 * @param blockFactory         A function that creates the {@link IFluidBlock}
 	 * @return The fluid and block
 	 */
-	public <T extends Block & IFluidBlock> Fluid registerFluid(Fluid fluid, Function<Fluid, T> blockFactory) {
-		fluids.add(fluid);
-		FluidRegistry.registerFluid(fluid);
-		FluidRegistry.addBucketForFluid(fluid);
-		registerBlock(blockFactory.apply(fluid), "fluid_" + fluid.getName());
+	public <T extends Block & IFluidBlock> Fluid register(Fluid fluid, Function<Fluid, T> blockFactory) {
+		final boolean useOwnFluid = FluidRegistry.registerFluid(fluid);
+		if (useOwnFluid) {
+			register(blockFactory.apply(fluid), "fluid_" + fluid.getName());
+		} else {
+			fluid = FluidRegistry.getFluid(fluid.getName());
+		}
+		FLUIDS.add(fluid);
 		return fluid;
 	}
 
@@ -259,8 +277,8 @@ public class InterstellarRegistry {
 	/**
 	 * Register an Item. Its name (registry key/name) must be provided.
 	 */
-	public <T extends Item> T registerItem(T item, String key) {
-		items.add(item);
+	public <T extends Item> T register(T item, String key) {
+		ITEMS.add(item);
 		item.setUnlocalizedName(modId + "." + key);
 
 		validateRegistryName(key);
@@ -277,6 +295,15 @@ public class InterstellarRegistry {
 		}
 
 		return item;
+	}
+
+	public <T extends ExoplanetBiome> T register(T biome) {
+		BIOMES.add(biome);
+		validateRegistryName(biome.getBiomeData().biomeName);
+		ResourceLocation name = new ResourceLocation(modId, biome.getBiomeData().biomeName);
+		safeSetRegistryName(biome, name);
+		ForgeRegistries.BIOMES.register(biome);
+		return biome;
 	}
 
 	// Enchantment
@@ -300,22 +327,29 @@ public class InterstellarRegistry {
 		registerEntity(entityClass, key, ++lastEntityId, mod, 64, 20, true);
 	}
 
-	public void registerEntity(Class<? extends Entity> entityClass, String key, int trackingRange, int updateFrequency, boolean sendsVelocityUpdates) {
+	public void registerEntity(Class<? extends Entity> entityClass, String key, int trackingRange, int updateFrequency,
+			boolean sendsVelocityUpdates) {
 		registerEntity(entityClass, key, ++lastEntityId, mod, trackingRange, updateFrequency, sendsVelocityUpdates);
 	}
 
-	public void registerEntity(Class<? extends Entity> entityClass, String key, int id, Object mod, int trackingRange, int updateFrequency, boolean sendsVelocityUpdates) {
+	public void registerEntity(Class<? extends Entity> entityClass, String key, int id, Object mod, int trackingRange,
+			int updateFrequency, boolean sendsVelocityUpdates) {
 		ResourceLocation resource = new ResourceLocation(modId, key);
-		EntityRegistry.registerModEntity(resource, entityClass, key, id, mod, trackingRange, updateFrequency, sendsVelocityUpdates);
+		EntityRegistry.registerModEntity(resource, entityClass, key, id, mod, trackingRange, updateFrequency,
+				sendsVelocityUpdates);
 	}
 
-	public void registerEntity(Class<? extends Entity> entityClass, String key, int trackingRange, int updateFrequency, boolean sendsVelocityUpdates, int eggPrimary, int eggSecondary) {
-		registerEntity(entityClass, key, ++lastEntityId, mod, trackingRange, updateFrequency, sendsVelocityUpdates, eggPrimary, eggSecondary);
+	public void registerEntity(Class<? extends Entity> entityClass, String key, int trackingRange, int updateFrequency,
+			boolean sendsVelocityUpdates, int eggPrimary, int eggSecondary) {
+		registerEntity(entityClass, key, ++lastEntityId, mod, trackingRange, updateFrequency, sendsVelocityUpdates,
+				eggPrimary, eggSecondary);
 	}
 
-	public void registerEntity(Class<? extends Entity> entityClass, String key, int id, Object mod, int trackingRange, int updateFrequency, boolean sendsVelocityUpdates, int eggPrimary, int eggSecondary) {
+	public void registerEntity(Class<? extends Entity> entityClass, String key, int id, Object mod, int trackingRange,
+			int updateFrequency, boolean sendsVelocityUpdates, int eggPrimary, int eggSecondary) {
 		ResourceLocation resource = new ResourceLocation(modId, key);
-		EntityRegistry.registerModEntity(resource, entityClass, key, id, mod, trackingRange, updateFrequency, sendsVelocityUpdates, eggPrimary, eggSecondary);
+		EntityRegistry.registerModEntity(resource, entityClass, key, id, mod, trackingRange, updateFrequency,
+				sendsVelocityUpdates, eggPrimary, eggSecondary);
 	}
 
 	@SideOnly(Side.CLIENT)
@@ -364,18 +398,21 @@ public class InterstellarRegistry {
 	}
 
 	/**
-	 * Set the object's registry name, if it has not already been set. Logs a warning if it has.
+	 * Set the object's registry name, if it has not already been set. Logs a
+	 * warning if it has.
 	 */
 	private void safeSetRegistryName(IForgeRegistryEntry<?> entry, ResourceLocation name) {
 		if (entry.getRegistryName() == null) {
 			entry.setRegistryName(name);
 		} else {
-			logger.warn("Registry name for {} has already been set. Was trying to set it to {}.", entry.getRegistryName(), name);
+			logger.warn("Registry name for {} has already been set. Was trying to set it to {}.",
+					entry.getRegistryName(), name);
 		}
 	}
 
 	/**
-	 * Ensure the given name does not contain upper case letters. If it does then toLowercase() is called
+	 * Ensure the given name does not contain upper case letters. If it does then
+	 * toLowercase() is called
 	 */
 	private void validateRegistryName(String name) {
 		if (PATTERN_REGISTRY_NAME.matcher(name).matches()) {
@@ -384,13 +421,15 @@ public class InterstellarRegistry {
 	}
 
 	// Advancements
-	public <T extends ICriterionInstance> ICriterionTrigger<T> registerAdvancementTrigger(ICriterionTrigger<T> trigger) {
+	public <T extends ICriterionInstance> ICriterionTrigger<T> registerAdvancementTrigger(
+			ICriterionTrigger<T> trigger) {
 		CriteriaTriggers.register(trigger);
 		return trigger;
 	}
 
 	/**
-	 * Register a TileEntity. "tile." + resourcePrefix is automatically prepended to the key.
+	 * Register a TileEntity. "tile." + resourcePrefix is automatically prepended to
+	 * the key.
 	 */
 	public void registerTileEntity(Class<? extends TileEntity> tileClass, String key) {
 		GameRegistry.registerTileEntity(tileClass, new ResourceLocation(modId, key));
@@ -400,7 +439,8 @@ public class InterstellarRegistry {
 	 * Registers a renderer for a TileEntity.
 	 */
 	@SideOnly(Side.CLIENT)
-	public <T extends TileEntity> void registerTileEntitySpecialRenderer(Class<T> tileClass, TileEntitySpecialRenderer<T> renderer) {
+	public <T extends TileEntity> void registerTileEntitySpecialRenderer(Class<T> tileClass,
+			TileEntitySpecialRenderer<T> renderer) {
 		ClientRegistry.bindTileEntitySpecialRenderer(tileClass, renderer);
 	}
 
@@ -423,7 +463,8 @@ public class InterstellarRegistry {
 
 	@SideOnly(Side.CLIENT)
 	public void setModel(Item item, int meta, String modelPath, String variant) {
-		ModelLoader.setCustomModelResourceLocation(item, meta, new ModelResourceLocation(this.resourcePrefix + modelPath, variant));
+		ModelLoader.setCustomModelResourceLocation(item, meta,
+				new ModelResourceLocation(this.resourcePrefix + modelPath, variant));
 	}
 
 	// endregion
@@ -431,12 +472,14 @@ public class InterstellarRegistry {
 	// region Initialization phases
 
 	/*
-	 * Initialization phases. Calling in either your common or client proxy is recommended. "client" methods in your client proxy, the rest in your common AND client proxy.
+	 * Initialization phases. Calling in either your common or client proxy is
+	 * recommended. "client" methods in your client proxy, the rest in your common
+	 * AND client proxy.
 	 */
 
-	private boolean	preInitDone		= false;
-	private boolean	initDone		= false;
-	private boolean	postInitDone	= false;
+	private boolean preInitDone = false;
+	private boolean initDone = false;
+	private boolean postInitDone = false;
 
 	/**
 	 * Call in the "preInit" phase in your common proxy.
@@ -488,8 +531,10 @@ public class InterstellarRegistry {
 
 		int oldRecipeRegisterCount = recipes.getOldRecipeRegisterCount();
 		if (oldRecipeRegisterCount > 0) {
-			long totalRecipes = ForgeRegistries.RECIPES.getKeys().stream().map(ResourceLocation::getResourceDomain).filter(s -> s.equals(modId)).count();
-			logger.warn("Mod '{}' is still registering recipes with RecipeBuilder ({} recipes, out of {} total)", modId, oldRecipeRegisterCount, totalRecipes);
+			long totalRecipes = ForgeRegistries.RECIPES.getKeys().stream().map(ResourceLocation::getResourceDomain)
+					.filter(s -> s.equals(modId)).count();
+			logger.warn("Mod '{}' is still registering recipes with RecipeBuilder ({} recipes, out of {} total)", modId,
+					oldRecipeRegisterCount, totalRecipes);
 		}
 
 		this.phasedInitializers.forEach(i -> i.postInit(this, event));
@@ -509,7 +554,7 @@ public class InterstellarRegistry {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@SideOnly(Side.CLIENT)
 	public void clientInit(FMLInitializationEvent event) {
-		for (Block block : this.blocks) {
+		for (Block block : this.BLOCKS) {
 			if (block instanceof IBlockTileEntity) {
 				IBlockTileEntity tileBlock = (IBlockTileEntity) block;
 				final TileEntitySpecialRenderer tesr = tileBlock.getTileRenderer();
@@ -529,6 +574,10 @@ public class InterstellarRegistry {
 	public void clientPostInit(FMLPostInitializationEvent event) {
 	}
 
+	public void registerCommand(ICommand command) {
+		ClientCommandHandler.instance.registerCommand(command);
+	}
+
 	// endregion
 
 	private void addRecipes() {
@@ -541,7 +590,7 @@ public class InterstellarRegistry {
 
 	@SideOnly(Side.CLIENT)
 	private void registerModels() {
-		for (Block block : blocks) {
+		for (Block block : BLOCKS) {
 			if (block instanceof IModelProvider) {
 				((IModelProvider) block).registerModels();
 			} else {
@@ -550,7 +599,7 @@ public class InterstellarRegistry {
 				ModelLoader.setCustomModelResourceLocation(Item.getItemFromBlock(block), 0, model);
 			}
 		}
-		for (Item item : items) {
+		for (Item item : ITEMS) {
 			if (item instanceof IMeshProvider) {
 				IMeshProvider customMesh = (IMeshProvider) item;
 				ModelBakery.registerItemVariants(item, customMesh.getVariants());

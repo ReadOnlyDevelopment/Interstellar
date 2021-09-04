@@ -8,24 +8,26 @@ import com.readonlydev.lib.celestial.data.Radius;
 import com.readonlydev.lib.celestial.data.Temperature;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import micdoodle8.mods.galacticraft.api.galaxies.Star;
 import net.minecraft.util.ResourceLocation;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class ExoStar extends Star implements IStar {
 
-	private final double	gConst		= Physics.GRAVITATIONAL_CONSTANT;
-	private final double	sMass		= Physics.SUN_MASS;
-	private final double	sLum		= Physics.SUN_LUMINOSITY;
-	private final double	sRadi		= Physics.SUN_RADIUS;
-	private final double	sBlzConst	= Physics.STEFAN_BOLTZMANN_CONSTANT;
-	private final double	spdLight	= Physics.SPEED_OF_LIGHT;
+	private final double gConst = Physics.GRAVITATIONAL_CONSTANT;
+	private final double sMass = Physics.SUN_MASS;
+	private final double sLum = Physics.SUN_LUMINOSITY;
+	private final double sRadi = Physics.SUN_RADIUS;
+	private final double sBlzConst = Physics.STEFAN_BOLTZMANN_CONSTANT;
+	private final double spdLight = Physics.SPEED_OF_LIGHT;
 
-	private Mass			mass;
-	private Radius			radius;
-	private Temperature		temperature;
-	private String			spectralClassifcation;
-	private IHabitableZone	habitableZone;
+	private Mass mass;
+	private Radius radius;
+	private Temperature temperature;
+	private String spectralClassifcation;
+	private IHabitableZone habitableZone;
 
 	private ExoStar(Builder builder) {
 		super(builder.starName);
@@ -82,10 +84,10 @@ public class ExoStar extends Star implements IStar {
 	}
 
 	public static final class Builder {
-		private String				starName;
-		private float				size;
-		private ResourceLocation	icon;
-		private ExoStarSystem		starSystem;
+		private String starName;
+		private float size;
+		private ResourceLocation icon;
+		private ExoStarSystem starSystem;
 
 		private Builder() {
 		}

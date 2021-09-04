@@ -46,4 +46,5 @@ public interface IExoplanet extends ICelestialObject {
 
 	double getSurfaceGravity();
 
+	long getDayLength();
 }

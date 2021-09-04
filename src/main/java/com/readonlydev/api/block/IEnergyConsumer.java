@@ -1,4 +1,4 @@
-package com.readonlydev.lib.block;
+package com.readonlydev.api.block;
 
 public interface IEnergyConsumer {
 

@@ -27,6 +27,6 @@ public class InterstellarItems {
 	public static final ItemSGuide GUIDE = new ItemSGuide();
 
 	public static void registerItems(InterstellarRegistry registry) {
-		registry.registerItem(GUIDE, "interstellar_guide");
+		registry.register(GUIDE, "interstellar_guide");
 	}
 }

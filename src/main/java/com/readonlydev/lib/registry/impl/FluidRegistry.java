@@ -21,6 +21,7 @@ package com.readonlydev.lib.registry.impl;
 
 import java.util.function.Consumer;
 
+import com.readonlydev.lib.registry.IRegistry;
 import com.readonlydev.lib.registry.InterstellarRegistry;
 
 import net.minecraft.block.Block;
@@ -28,13 +29,15 @@ import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.fluids.Fluid;
 import net.minecraftforge.fluids.IFluidBlock;
 
-public abstract class FluidRegistry {
+public abstract class FluidRegistry implements IRegistry {
 
 	protected static String modid;
 
+	@Override
 	public abstract void register(InterstellarRegistry registry);
 
-	protected static <T extends Block & IFluidBlock> Fluid create(String name, boolean hasFlowIcon, boolean hasOverlay, Consumer<Fluid> fluidPropertyApplier) {
+	protected static <T extends Block & IFluidBlock> Fluid create(String name, boolean hasFlowIcon, boolean hasOverlay,
+			Consumer<Fluid> fluidPropertyApplier) {
 		String texturePrefix = modid + ":" + "blocks/fluids/";
 		ResourceLocation still = new ResourceLocation(texturePrefix + name + "_still");
 		ResourceLocation flowing = hasFlowIcon ? new ResourceLocation(texturePrefix + name + "_flow") : still;

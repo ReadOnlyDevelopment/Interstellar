@@ -59,7 +59,29 @@ apply from: 'gradle/deploy.gradle'
 apply from: 'gradle/versioning.gradle'
 apply from: 'gradle/license.gradle'
 
-apply from: 'https://raw.githubusercontent.com/ReadOnlyDevelopment/gradle/galacticraft/dev-latest.gradle'
+//apply from: 'https://raw.githubusercontent.com/ReadOnlyDevelopment/gradle/galacticraft/dev-latest.gradle'
+
+String gcbuild = "261"
+String gcversion = "1.12.2-4.0.2.${gcbuild}"
+
+repositories {
+	ivy {
+		url "https://micdoodle8.com/new-builds/"
+		layout 'pattern', {
+			artifact "[organization]/${gcbuild}/[module]-[revision].jar"
+		}
+		metadataSources {
+			artifact()
+		}
+	}
+}
+
+dependencies {
+	compile "GC-1.12-dev:GalacticraftCore-Dev:${gcversion}"
+	compile "GC-1.12-dev:Galacticraft-API:${gcversion}"
+	compile "GC-1.12-dev:Galacticraft-Planets-Dev:${gcversion}"
+	compile "GC-1.12-dev:MicdoodleCore-Dev:${gcversion}"
+}
 
 String getBuildNumber() {
 	def versionFile = file('version.properties')

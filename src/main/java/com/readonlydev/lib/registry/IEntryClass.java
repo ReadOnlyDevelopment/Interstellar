@@ -21,9 +21,9 @@ package com.readonlydev.lib.registry;
 
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
-public interface IRegistryClass<T extends IForgeRegistryEntry<T>> {
+public interface IEntryClass<T extends IForgeRegistryEntry<T>> extends IRegistry {
 
-	void register(InterstellarRegistry registry);
-
-	Class<? extends IForgeRegistryEntry<T>> getEntry();
+	default Class<? extends IForgeRegistryEntry<T>> getEntry() {
+		return null;
+	}
 }

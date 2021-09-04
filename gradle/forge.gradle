@@ -15,6 +15,7 @@ dependencies {
 minecraft {
 	version = "${minecraft_version}-${forge_version}"
 	mappings = "${mappings_version}"
+	useDepAts = true
 	runDir = "run"
 	replace '${version}', version
 	replace '${fingerprint}', project.findProperty('signSHA1')

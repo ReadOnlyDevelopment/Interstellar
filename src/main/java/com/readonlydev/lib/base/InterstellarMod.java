@@ -32,7 +32,7 @@ import com.google.common.collect.Sets;
 import com.readonlydev.api.mod.IEventListener;
 import com.readonlydev.api.mod.IIDProvider;
 import com.readonlydev.api.proxy.IProxy;
-import com.readonlydev.lib.registry.IRegistryClass;
+import com.readonlydev.lib.registry.IEntryClass;
 import com.readonlydev.lib.registry.InterstellarRegistry;
 import com.readonlydev.lib.version.Version;
 
@@ -182,7 +182,7 @@ public abstract class InterstellarMod implements IIDProvider {
 		return currVersion.isLowerThan(latestVersion);
 	}
 
-	protected <T extends IForgeRegistryEntry<T>> void addContentClass(IRegistryClass<T> registryClazz) {
+	protected <T extends IForgeRegistryEntry<T>> void addContentClass(IEntryClass<T> registryClazz) {
 		registry.addRegistrationHandler(registryClazz::register, registryClazz.getEntry());
 	}
 

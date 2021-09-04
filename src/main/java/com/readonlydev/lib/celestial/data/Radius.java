@@ -5,13 +5,8 @@ import com.readonlydev.lib.celestial.SpaceCalculations;
 
 public class Radius {
 
-	public static final Radius	EARTH	= new Radius(Physics.EARTH_MASS, Radius.Unit.EARTH);
-	public static final Radius	SOLAR	= new Radius(Physics.SUN_MASS, Radius.Unit.SOLAR);
-
 	public static enum Unit {
-		SOLAR("R☉"),
-		EARTH("R⊕"),
-		ABSOLUTE("km");
+		SOLAR("R☉"), EARTH("R⊕"), ABSOLUTE("km");
 
 		private final String symbol;
 
@@ -24,8 +19,8 @@ public class Radius {
 		}
 	}
 
-	private final double	absoluteValue;
-	private Radius.Unit		unit;
+	private final double absoluteValue;
+	private Radius.Unit unit;
 
 	public Radius(double value) {
 		this(value, Radius.Unit.ABSOLUTE);
@@ -39,16 +34,16 @@ public class Radius {
 	protected double toAbsolute(double value) {
 		double val;
 		switch (unit) {
-			case ABSOLUTE:
-				val = value;
-				break;
-			case EARTH:
-				val = value * Radius.EARTH.getValue();
-				break;
-			case SOLAR:
-				val = value * Radius.SOLAR.getValue();
-			default:
-				throw new IllegalArgumentException();
+		case ABSOLUTE:
+			val = value;
+			break;
+		case EARTH:
+			val = value * Physics.EARTH_RADIUS;
+			break;
+		case SOLAR:
+			val = value * Physics.SUN_RADIUS;
+		default:
+			throw new IllegalArgumentException();
 		}
 		return val;
 	}
@@ -56,16 +51,16 @@ public class Radius {
 	protected double fromAbsolute(double value) {
 		double val;
 		switch (unit) {
-			case ABSOLUTE:
-				val = value;
-				break;
-			case EARTH:
-				val = value / Radius.EARTH.getValue();
-				break;
-			case SOLAR:
-				val = value / Radius.SOLAR.getValue();
-			default:
-				throw new IllegalArgumentException();
+		case ABSOLUTE:
+			val = value;
+			break;
+		case EARTH:
+			val = value / Physics.EARTH_RADIUS;
+			break;
+		case SOLAR:
+			val = value / Physics.SUN_RADIUS;
+		default:
+			throw new IllegalArgumentException();
 		}
 		return val;
 	}

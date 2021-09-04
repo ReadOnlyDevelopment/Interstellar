@@ -37,7 +37,12 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.util.IStringSerializable;
 
 /**
- * Used to map enum values to items for easy grouping. Intended to be implemented on the enum, but any class would work (you would still have to make the enum though). Every value of the enum should represent one and only one unique item. Remember to store the item, preferably in a private field. This does not register the items for you, but the {@code registerItems} method can be used. Enum values can be added or sorted with no ill effects.
+ * Used to map enum values to items for easy grouping. Intended to be
+ * implemented on the enum, but any class would work (you would still have to
+ * make the enum though). Every value of the enum should represent one and only
+ * one unique item. Remember to store the item, preferably in a private field.
+ * This does not register the items for you, but the {@code registerItems}
+ * method can be used. Enum values can be added or sorted with no ill effects.
  *
  * @param <E> The enum, which would typically implement this interface
  * @param <I> The Item class, provided to reduce the need for casting
@@ -45,7 +50,9 @@ import net.minecraft.util.IStringSerializable;
 @SuppressWarnings("rawtypes")
 public interface IItemEnum<E extends Enum<E>, I extends Item> extends IStringSerializable {
 	/**
-	 * Gets the enum that represents the object. Typically, you would just {@code return this}. This exists because the implementing class may not be an enum.
+	 * Gets the enum that represents the object. Typically, you would just
+	 * {@code return this}. This exists because the implementing class may not be an
+	 * enum.
 	 *
 	 * @return An enum representing this object, usually the object itself
 	 */
@@ -61,7 +68,8 @@ public interface IItemEnum<E extends Enum<E>, I extends Item> extends IStringSer
 	I getItem();
 
 	/**
-	 * Convenience method to get an {@code ItemStack} of the {@code Item}. Calls {@code getItem}.
+	 * Convenience method to get an {@code ItemStack} of the {@code Item}. Calls
+	 * {@code getItem}.
 	 *
 	 * @return An {@code ItemStack} with a size of 1
 	 */
@@ -71,7 +79,8 @@ public interface IItemEnum<E extends Enum<E>, I extends Item> extends IStringSer
 	}
 
 	/**
-	 * Convenience method to get an {@code ItemStack} of the {@code Item}. Calls {@code getItem}.
+	 * Convenience method to get an {@code ItemStack} of the {@code Item}. Calls
+	 * {@code getItem}.
 	 *
 	 * @param amount The stack size
 	 * @return An {@code ItemStack} with a size of {code amount}
@@ -82,7 +91,8 @@ public interface IItemEnum<E extends Enum<E>, I extends Item> extends IStringSer
 	}
 
 	/**
-	 * Gets the name for the {@code Item} (excluding mod ID). Should contain only lowercase letters and underscores ([a-z_]+).
+	 * Gets the name for the {@code Item} (excluding mod ID). Should contain only
+	 * lowercase letters and underscores ([a-z_]+).
 	 *
 	 * @return A unique name for the {@code Item}, in snake_case
 	 */
@@ -94,9 +104,11 @@ public interface IItemEnum<E extends Enum<E>, I extends Item> extends IStringSer
 	}
 
 	/**
-	 * Gets a prefix for all item names. If non-empty, {@code getName} will prepend the prefix followed by an underscore to every name.
+	 * Gets a prefix for all item names. If non-empty, {@code getName} will prepend
+	 * the prefix followed by an underscore to every name.
 	 *
-	 * @return The name prefix, or an empty string if a prefix should not be used (default empty)
+	 * @return The name prefix, or an empty string if a prefix should not be used
+	 *         (default empty)
 	 */
 	@Nonnull
 	default String getNamePrefix() {
@@ -117,35 +129,41 @@ public interface IItemEnum<E extends Enum<E>, I extends Item> extends IStringSer
 		 */
 		public void registerItems(IItemEnum... items) {
 			for (IItemEnum item : items) {
-				registry.registerItem(item.getItem(), item.getName());
+				registry.register(item.getItem(), item.getName());
 			}
 		}
 
 		/**
-		 * Registers blocks for any enum type, using the given functions to get the block and name.
+		 * Registers blocks for any enum type, using the given functions to get the
+		 * block and name.
 		 *
 		 * @param block     Function that returns the block for the enum
-		 * @param name      Function that returns the registry name (minus namespace/mod ID) of the block
+		 * @param name      Function that returns the registry name (minus namespace/mod
+		 *                  ID) of the block
 		 * @param enumClass The enum type, E
 		 * @param <E>       Any enum type
 		 */
-		public <E extends Enum<E>> void registerBlocksGenericEnum(Function<E, Block> block, Function<E, String> name, Class<E> enumClass) {
+		public <E extends Enum<E>> void registerBlocksGenericEnum(Function<E, Block> block, Function<E, String> name,
+				Class<E> enumClass) {
 			for (E e : enumClass.getEnumConstants()) {
-				registry.registerBlock(block.apply(e), name.apply(e));
+				registry.register(block.apply(e), name.apply(e));
 			}
 		}
 
 		/**
-		 * Registers items for any enum type, using the given functions to get the item and name.
+		 * Registers items for any enum type, using the given functions to get the item
+		 * and name.
 		 *
 		 * @param item      Function that returns the item for the enum
-		 * @param name      Function that returns the registry name (minus namespace/mod ID) of the item
+		 * @param name      Function that returns the registry name (minus namespace/mod
+		 *                  ID) of the item
 		 * @param enumClass The enum type, E
 		 * @param <E>       Any enum type
 		 */
-		public <E extends Enum<E>> void registerItemsGenericEnum(Function<E, Item> item, Function<E, String> name, Class<E> enumClass) {
+		public <E extends Enum<E>> void registerItemsGenericEnum(Function<E, Item> item, Function<E, String> name,
+				Class<E> enumClass) {
 			for (E e : enumClass.getEnumConstants()) {
-				registry.registerItem(item.apply(e), name.apply(e));
+				registry.register(item.apply(e), name.apply(e));
 			}
 		}
 	}

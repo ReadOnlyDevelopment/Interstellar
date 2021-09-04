@@ -12,9 +12,7 @@ import com.readonlydev.lib.celestial.SpaceCalculations;
 public class Mass extends Unit {
 
 	public static enum Unit {
-		SOLAR("M☉"),
-		EARTH("M⊕"),
-		ABSOLUTE("Kg");
+		SOLAR("M☉"), EARTH("M⊕"), ABSOLUTE("Kg");
 
 		private final String symbol;
 
@@ -27,8 +25,8 @@ public class Mass extends Unit {
 		}
 	}
 
-	private final double	absoluteValue;
-	private Mass.Unit		unit;
+	private final double absoluteValue;
+	private Mass.Unit unit;
 
 	public Mass(double value) {
 		this(value, Mass.Unit.ABSOLUTE);
@@ -42,16 +40,16 @@ public class Mass extends Unit {
 	protected double toAbsolute(double value) {
 		double val;
 		switch (unit) {
-			case ABSOLUTE:
-				val = value;
-				break;
-			case EARTH:
-				val = value * Radius.EARTH.getValue();
-				break;
-			case SOLAR:
-				val = value * Radius.SOLAR.getValue();
-			default:
-				throw new IllegalArgumentException();
+		case ABSOLUTE:
+			val = value;
+			break;
+		case EARTH:
+			val = value * Physics.EARTH_MASS;
+			break;
+		case SOLAR:
+			val = value * Physics.SUN_MASS;
+		default:
+			throw new IllegalArgumentException();
 		}
 		return val;
 	}
@@ -59,16 +57,16 @@ public class Mass extends Unit {
 	protected double fromAbsolute(double value) {
 		double val;
 		switch (unit) {
-			case ABSOLUTE:
-				val = value;
-				break;
-			case EARTH:
-				val = value / Radius.EARTH.getValue();
-				break;
-			case SOLAR:
-				val = value / Radius.SOLAR.getValue();
-			default:
-				throw new IllegalArgumentException();
+		case ABSOLUTE:
+			val = value;
+			break;
+		case EARTH:
+			val = value / Physics.EARTH_MASS;
+			break;
+		case SOLAR:
+			val = value / Physics.SUN_MASS;
+		default:
+			throw new IllegalArgumentException();
 		}
 		return val;
 	}

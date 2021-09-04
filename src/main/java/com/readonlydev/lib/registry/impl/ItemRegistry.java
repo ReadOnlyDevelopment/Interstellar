@@ -19,12 +19,12 @@
 
 package com.readonlydev.lib.registry.impl;
 
-import com.readonlydev.lib.registry.IRegistryClass;
+import com.readonlydev.lib.registry.IEntryClass;
 
 import net.minecraft.item.Item;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
-public abstract class ItemRegistry implements IRegistryClass<Item> {
+public abstract class ItemRegistry implements IEntryClass<Item> {
 
 	@Override
 	public Class<? extends IForgeRegistryEntry<Item>> getEntry() {
