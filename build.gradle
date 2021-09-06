@@ -34,7 +34,6 @@ ext {
 	GC_VERSION = "1.12.2-4.0.2"
 	GC_FULL_VERSION = "${GC_VERSION}.${GC_BUILD}"
 	MANIFESTS = [
-		'/': [
 			'Specification-Title':      'Interstellar',
 			'Specification-Vendor':     'ReadOnly Development',
 			'Specification-Version':    SPEC_VERSION,
@@ -44,26 +43,25 @@ ext {
 			'Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
 			'GitCommit': grgit.head().abbreviatedId,
 			'Git-Branch': grgit.branch.current().getName(),
-			'Built Against Forge': "${MC_VERSION}-${FORGE_VERSION}",
-			'Using Mappings': MCP_MAPPINGS,
-			'Built Against Galacticraft': GC_FULL_VERSION
+			'Built-Against': "${MC_VERSION}-${FORGE_VERSION}",
+			'Using-Mappings': MCP_MAPPINGS,
+			'Built-Against-Galacticraft': GC_FULL_VERSION
 		] as LinkedHashMap
-	]
 }
 
 defaultTasks 'cleanBuild'
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 
+def build_num = getBuildNumber()
+version = "${MC_VERSION}-${mod_version}-build${build_num}"
+group = "${mod_group}"
+archivesBaseName = "${mod_archivesBaseName}"
+
 apply from: 'gradle/forge.gradle'
 apply from: 'gradle/development.gradle'
 apply from: 'gradle/deploy.gradle'
-apply from: 'gradle/versioning.gradle'
 apply from: 'gradle/license.gradle'
-
-version = getVersion("version_short")
-group = "${mod_group}"
-archivesBaseName = "${mod_archivesBaseName}"
 
 sourceCompatibility = targetCompatibility = '1.8'
 compileJava {
@@ -107,9 +105,29 @@ dependencies {
 	compile "GC-1.12-dev:MicdoodleCore-Dev:${GC_FULL_VERSION}"
 }
 
+String getBuildNumber() {
+	def versionFile = file('version.properties')
+	if (versionFile.canRead()) {
+		Properties versionProps = new Properties()
+		versionProps.load(new FileInputStream(versionFile))
+		return versionProps['build_num'].toString()
+	}
+	return "0"
+}
+
 task incrementBuild {
 	doFirst {
-		incrementBuild
+		def versionFile = file('version.properties')
+		if (versionFile.canRead()) {
+			Properties versionProps = new Properties()
+			versionProps.load(new FileInputStream(versionFile))
+			def num = versionProps['build_num'].toInteger() + 1
+			println("incrementing BuildNumber to: " + num)
+			versionProps['build_num'] = num.toString()
+			versionProps.store(versionFile.newWriter(), null)
+		} else {
+			println("version.properties file not found! Ignoring.")
+		}
 	}
 }
 

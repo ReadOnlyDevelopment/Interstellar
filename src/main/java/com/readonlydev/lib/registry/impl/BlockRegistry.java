@@ -19,13 +19,12 @@
 
 package com.readonlydev.lib.registry.impl;
 
-import com.readonlydev.api.mod.IEventListener;
 import com.readonlydev.lib.registry.IEntryClass;
 
 import net.minecraft.block.Block;
 import net.minecraftforge.registries.IForgeRegistryEntry;
 
-public abstract class BlockRegistry implements IEntryClass<Block>, IEventListener {
+public abstract class BlockRegistry implements IEntryClass<Block> {
 
 	@Override
 	public Class<? extends IForgeRegistryEntry<Block>> getEntry() {

@@ -10,22 +10,11 @@ def setMainManifestProps = { Manifest manifest->
 	manifest.attributes (
 			'FMLAT': 'interstellar_at.cfg',
 			)
-	manifest.mainAttributes (
-			'Maven-Artifact': "${project.group}:${project.archivesBaseName}:${project.version}",
-			'Timestamp': System.currentTimeMillis(),
-			'Specification-Title': 'Interstellar',
-			'Specification-Vendor': 'ReadOnly Development',
-			'Specification-Version': '1',
-			'Implementation-Title': 'Interstellar',
-			'Implementation-Version': project.version,
-			'Implementation-Vendor' :'ReadOnly Development',
-			'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-			'Built-On-Java': "${System.getProperty('java.vm.version')} (${System.getProperty('java.vm.vendor')})",
-			'Built-On': "${project.minecraft_version}-${project.forge_version}"
-			)
+	manifest.mainAttributes (MANIFESTS)
 }
 
 jar {
+	archiveName = "Interstellar-${project.version}.jar"
 	manifest(setMainManifestProps)
 }
 
@@ -34,15 +23,17 @@ task signJar(type: SignJar, dependsOn: reobfJar) {
 		project.hasProperty('keyStore')
 	}
 
-	keyStore = project.findProperty('keyStore')
-	alias = project.findProperty('keyStoreAlias')
-	storePass = project.findProperty('keyStorePass')
-	keyPass = project.findProperty('keyStoreKeyPass')
 	inputFile = jar.archivePath
 	outputFile = jar.archivePath
+
+	keyStore = findProperty('keyStore')
+	alias = findProperty('keyStoreAlias')
+	storePass = findProperty('keyStorePass')
+	keyPass = findProperty('keyStoreKeyPass')
 }
 
 task devJar(type: Jar) {
+	archiveName = "Interstellar-${project.version}.jar"
 	from sourceSets.main.allJava
 	from sourceSets.main.output
 	classifier = 'dev'
