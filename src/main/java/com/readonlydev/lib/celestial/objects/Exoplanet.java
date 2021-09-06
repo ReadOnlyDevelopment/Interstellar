@@ -36,7 +36,6 @@ import com.readonlydev.lib.celestial.enums.PlanetType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import micdoodle8.mods.galacticraft.api.galaxies.Planet;
-import micdoodle8.mods.galacticraft.api.galaxies.SolarSystem;
 import micdoodle8.mods.galacticraft.api.world.AtmosphereInfo;
 import micdoodle8.mods.galacticraft.api.world.EnumAtmosphericGas;
 import net.minecraft.util.ResourceLocation;
@@ -71,7 +70,7 @@ public class Exoplanet extends Planet implements IExoplanet {
 		this.radius = builder.radius;
 		this.temperature = builder.temperature;
 		this.daylength = builder.daylength;
-		// this.hostStar = builder.parentSolarSystem.getMainStar();
+		this.hostStar = builder.parentSolarSystem.getMainStar();
 	}
 
 	@Override
@@ -134,6 +133,11 @@ public class Exoplanet extends Planet implements IExoplanet {
 		return 0;
 	}
 
+	@Override
+	public long getDayLength() {
+		return daylength;
+	}
+
 	public static class Builder {
 
 		private String planetName;
@@ -152,7 +156,7 @@ public class Exoplanet extends Planet implements IExoplanet {
 		private float density = 0.0F;
 		private Biome[] biomes;
 		private ResourceLocation icon;
-		private SolarSystem parentSolarSystem;
+		private ExoStarSystem parentSolarSystem;
 		private List<EnumAtmosphericGas> gasses;
 		private Mass mass;
 		private Radius radius;
@@ -252,11 +256,6 @@ public class Exoplanet extends Planet implements IExoplanet {
 			return this;
 		}
 
-		public Builder solarsystem(SolarSystem parentSolarSystem) {
-			this.parentSolarSystem = parentSolarSystem;
-			return this;
-		}
-
 		public Builder solarsystem(ExoStarSystem parentSolarSystem) {
 			this.parentSolarSystem = parentSolarSystem;
 			return this;
@@ -270,10 +269,5 @@ public class Exoplanet extends Planet implements IExoplanet {
 		public Exoplanet build() {
 			return new Exoplanet(this);
 		}
-	}
-
-	@Override
-	public long getDayLength() {
-		return daylength;
 	}
 }

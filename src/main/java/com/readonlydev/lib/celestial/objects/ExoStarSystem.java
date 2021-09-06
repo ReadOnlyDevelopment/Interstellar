@@ -1,5 +1,6 @@
 package com.readonlydev.lib.celestial.objects;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import com.readonlydev.api.celestial.IExoplanet;
@@ -7,31 +8,35 @@ import com.readonlydev.api.celestial.ISystem;
 import com.readonlydev.lib.celestial.data.Vec;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import micdoodle8.mods.galacticraft.api.galaxies.SolarSystem;
 
 @Data
+@EqualsAndHashCode(callSuper = false)
 public class ExoStarSystem extends SolarSystem implements ISystem {
 
 	private ExoStar mainStar;
+	private List<IExoplanet> planetList = new ArrayList<>();
 
 	private ExoStarSystem(Builder builder) {
 		super(builder.systemName, builder.galaxy);
 		this.setMainStar(builder.mainStar);
 		this.setMapPosition(builder.mapPosition.toVector3());
+		this.mainStar = builder.mainStar;
 	}
 
-	public ExoStarSystem(String solarSystem, String parentGalaxy) {
-		super(solarSystem, parentGalaxy);
+	public boolean addPlanet(IExoplanet exoplanet) {
+		return planetList.add(exoplanet);
 	}
 
 	@Override
 	public List<IExoplanet> getPlanetsList() {
-		return null;
+		return planetList;
 	}
 
 	@Override
 	public IExoplanet[] getPlanets() {
-		return null;
+		return planetList.toArray(new IExoplanet[planetList.size()]);
 	}
 
 	@Override
@@ -40,13 +45,10 @@ public class ExoStarSystem extends SolarSystem implements ISystem {
 	}
 
 	public static final class Builder {
-		private String	systemName;
-		private String	galaxy;
-		private Vec		mapPosition;
-		private ExoStar	mainStar;
-
-		private Builder() {
-		}
+		private String systemName;
+		private String galaxy;
+		private Vec mapPosition;
+		private ExoStar mainStar;
 
 		public Builder name(String systemName) {
 			this.systemName = systemName;

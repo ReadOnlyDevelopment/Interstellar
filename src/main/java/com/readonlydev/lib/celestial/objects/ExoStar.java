@@ -35,6 +35,7 @@ public class ExoStar extends Star implements IStar {
 		this.setTierRequired(-1);
 		this.setBodyIcon(builder.icon);
 		this.setParentSolarSystem(builder.starSystem);
+		this.habitableZone = builder.zone;
 	}
 
 	@Override
@@ -59,7 +60,7 @@ public class ExoStar extends Star implements IStar {
 
 	@Override
 	public IHabitableZone getHabitableZone() {
-		return null;
+		return habitableZone;
 	}
 
 	@Override
@@ -88,6 +89,7 @@ public class ExoStar extends Star implements IStar {
 		private float size;
 		private ResourceLocation icon;
 		private ExoStarSystem starSystem;
+		private IHabitableZone zone;
 
 		private Builder() {
 		}
@@ -109,6 +111,11 @@ public class ExoStar extends Star implements IStar {
 
 		public Builder starSystem(ExoStarSystem starSystem) {
 			this.starSystem = starSystem;
+			return this;
+		}
+
+		public Builder habitableZone(IHabitableZone zone) {
+			this.zone = zone;
 			return this;
 		}
 
