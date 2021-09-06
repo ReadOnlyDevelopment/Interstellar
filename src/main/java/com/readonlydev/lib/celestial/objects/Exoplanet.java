@@ -32,6 +32,7 @@ import com.readonlydev.lib.celestial.data.Radius;
 import com.readonlydev.lib.celestial.data.Temperature;
 import com.readonlydev.lib.celestial.enums.HabitabilityClassification;
 import com.readonlydev.lib.celestial.enums.PlanetType;
+import com.readonlydev.lib.utils.factory.CelestialFactory;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -138,7 +139,11 @@ public class Exoplanet extends Planet implements IExoplanet {
 		return daylength;
 	}
 
-	public static class Builder {
+	public static CelestialFactory<Exoplanet> factory() {
+		return new Exoplanet.Builder();
+	}
+
+	static final class Builder implements CelestialFactory<Exoplanet> {
 
 		private String planetName;
 		private float relativeSize;
@@ -266,6 +271,7 @@ public class Exoplanet extends Planet implements IExoplanet {
 			return this;
 		}
 
+		@Override
 		public Exoplanet build() {
 			return new Exoplanet(this);
 		}

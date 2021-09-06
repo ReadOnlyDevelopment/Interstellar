@@ -6,6 +6,7 @@ import com.readonlydev.lib.celestial.Physics;
 import com.readonlydev.lib.celestial.data.Mass;
 import com.readonlydev.lib.celestial.data.Radius;
 import com.readonlydev.lib.celestial.data.Temperature;
+import com.readonlydev.lib.utils.factory.CelestialFactory;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -34,8 +35,15 @@ public class ExoStar extends Star implements IStar {
 		this.setRelativeSize(builder.size);
 		this.setTierRequired(-1);
 		this.setBodyIcon(builder.icon);
-		this.setParentSolarSystem(builder.starSystem);
 		this.habitableZone = builder.zone;
+		this.mass = builder.mass;
+		this.radius = builder.radius;
+		this.temperature = builder.temperature;
+		this.spectralClassifcation = builder.spectralClassifcation;
+	}
+
+	public void setSolarSystem(ExoStarSystem system) {
+		this.setParentSolarSystem(system);
 	}
 
 	@Override
@@ -84,18 +92,42 @@ public class ExoStar extends Star implements IStar {
 		return (2.0 * gConst * getMass().getValue() * sMass / (spdLight * spdLight)) / (1000.0 * sRadi);
 	}
 
-	public static final class Builder {
-		private String starName;
-		private float size;
-		private ResourceLocation icon;
-		private ExoStarSystem starSystem;
-		private IHabitableZone zone;
+	public static CelestialFactory<ExoStar> factory() {
+		return new ExoStar.Builder();
+	}
 
-		private Builder() {
-		}
+	static final class Builder implements CelestialFactory<ExoStar> {
+		private String starName;
+		private float size = 1.0F;
+		private ResourceLocation icon;
+		private IHabitableZone zone;
+		private Mass mass;
+		private Radius radius;
+		private Temperature temperature;
+		private String spectralClassifcation;
 
 		public Builder name(String starName) {
 			this.starName = starName;
+			return this;
+		}
+
+		public Builder mass(double solarMasses) {
+			this.mass = new Mass(solarMasses, Mass.Unit.SOLAR);
+			return this;
+		}
+
+		public Builder radius(double solarRadius) {
+			this.radius = new Radius(solarRadius, Radius.Unit.SOLAR);
+			return this;
+		}
+
+		public Builder temperature(double surfaceTemperature) {
+			this.temperature = new Temperature(surfaceTemperature);
+			return this;
+		}
+
+		public Builder spectralClass(String clazz) {
+			this.spectralClassifcation = clazz;
 			return this;
 		}
 
@@ -109,16 +141,12 @@ public class ExoStar extends Star implements IStar {
 			return this;
 		}
 
-		public Builder starSystem(ExoStarSystem starSystem) {
-			this.starSystem = starSystem;
-			return this;
-		}
-
 		public Builder habitableZone(IHabitableZone zone) {
 			this.zone = zone;
 			return this;
 		}
 
+		@Override
 		public ExoStar build() {
 			return new ExoStar(this);
 		}

@@ -6,6 +6,7 @@ import java.util.List;
 import com.readonlydev.api.celestial.IExoplanet;
 import com.readonlydev.api.celestial.ISystem;
 import com.readonlydev.lib.celestial.data.Vec;
+import com.readonlydev.lib.utils.factory.CelestialFactory;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -44,7 +45,11 @@ public class ExoStarSystem extends SolarSystem implements ISystem {
 		return mainStar;
 	}
 
-	public static final class Builder {
+	public static CelestialFactory<ExoStarSystem> factory() {
+		return new ExoStarSystem.Builder();
+	}
+
+	static final class Builder implements CelestialFactory<ExoStarSystem> {
 		private String systemName;
 		private String galaxy;
 		private Vec mapPosition;
@@ -70,6 +75,7 @@ public class ExoStarSystem extends SolarSystem implements ISystem {
 			return this;
 		}
 
+		@Override
 		public ExoStarSystem build() {
 			return new ExoStarSystem(this);
 		}
