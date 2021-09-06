@@ -1,18 +1,8 @@
-def getVersion = {
-	//TAG-offset-hash
-	def raw = grgit.describe(longDescr: true, tags:true)
-	def desc = (raw == null ? '0.0-0-unknown' : grgit.describe(longDescr: true, tags:true)).split('-') as List
-	def hash = desc.remove(desc.size() - 1)
-	def offset = desc.remove(desc.size() - 1)
-	def tag = desc.join('-')
-	def branch = grgit.branch.current().name
-	if (branch in ['master', 'HEAD', MC_VERSION, MC_VERSION + '.0'])
-		branch = null
-	if (branch != null && branch.endsWith('.x') && MC_VERSION.startsWith(branch.substring(0, branch.length() - 2))) //1.13.x
-		branch = null
-	SPEC_VERSION = tag
-	BUILD_NUMBER = LEGACY_BUILD + offset.toInteger()
-	return "${MC_VERSION}-${LEGACY_MAJOR}.${tag}.${BUILD_NUMBER}${t -> if (branch != null) t << '-' + branch}".toString() //Bake the response instead of making it dynamic
+def getVersion(String type) {
+	def maj = SPEC_VERSION
+	def min = IMPL_VERSION
+	BUILD_NUMBER = getBuildNumber()
+	return makeVersionMap(maj, min, BUILD_NUMBER, grgit.head().abbreviatedId)["${type}"]
 }
 
 def getBuildNumber() {
@@ -25,7 +15,7 @@ def getBuildNumber() {
 	return "0"
 }
 
-def incrementBuild {
+def incrementBuild() {
 	def versionFile = file('version.properties')
 	if (versionFile.canRead()) {
 		Properties versionProps = new Properties()
@@ -39,7 +29,20 @@ def incrementBuild {
 	}
 }
 
+def makeVersionMap(maj, min, rev, githash) {
+	def out = [
+		major: maj.toString(),
+		minor: min.toString(),
+		revision: rev.toString(),
+		githash: githash,
+		version: "${maj}.${min}.${rev}.${githash}",
+		version_short: "${maj}.${min}.${rev}"
+	]
+	return out
+}
+
 ext {
+	getVersion = this.&getVersion
 	getBuildNumber = this.&getBuildNumber
 	incrementBuild = this.&incrementBuild
 }

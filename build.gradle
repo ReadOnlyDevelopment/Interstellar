@@ -21,26 +21,47 @@ plugins {
 	id 'java'
 }
 
+import java.util.LinkedHashMap
+
 ext {
 	MC_VERSION = '1.12.2'
+	FORGE_VERSION = '14.23.5.2847'
+	MCP_MAPPINGS = 'snapshot_20171003'
+	SPEC_VERSION = 1
+	IMPL_VERSION = 0
+	BUILD_NUMBER = 0
+	GC_BUILD = 261
+	GC_VERSION = "1.12.2-4.0.2"
+	GC_FULL_VERSION = "${GC_VERSION}.${GC_BUILD}"
 	MANIFESTS = [
 		'/': [
+			'Specification-Title':      'Interstellar',
+			'Specification-Vendor':     'ReadOnly Development',
+			'Specification-Version':    SPEC_VERSION,
+			'Implementation-Title':     project.group,
+			'Implementation-Version':   project.version.substring(MC_VERSION.length() + 1),
+			'Implementation-Vendor':    'ReadOnly Development',
 			'Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
 			'GitCommit': grgit.head().abbreviatedId,
-			'Git-Branch': grgit.branch.current().getName()
+			'Git-Branch': grgit.branch.current().getName(),
+			'Built Against Forge': "${MC_VERSION}-${FORGE_VERSION}",
+			'Using Mappings': MCP_MAPPINGS,
+			'Built Against Galacticraft': GC_FULL_VERSION
 		] as LinkedHashMap
 	]
 }
-
-System.out.println(grgit.head().abbreviatedId)
-System.out.println(grgit.branch.current().getName())
 
 defaultTasks 'cleanBuild'
 
 apply plugin: 'net.minecraftforge.gradle.forge'
 
-def build_num = getBuildNumber()
-version = "${mod_version}-build${build_num}"
+apply from: 'gradle/forge.gradle'
+apply from: 'gradle/development.gradle'
+apply from: 'gradle/deploy.gradle'
+apply from: 'gradle/versioning.gradle'
+apply from: 'gradle/license.gradle'
+
+version = getVersion("version_short")
 group = "${mod_group}"
 archivesBaseName = "${mod_archivesBaseName}"
 
@@ -56,34 +77,22 @@ System.out.println('- JVM:    	   ' + System.getProperty('java.vm.version') + ' 
 System.out.println('- Arch:  	   ' + System.getProperty('os.arch'))
 System.out.println()
 System.out.println('Minecraft Information')
-System.out.println('- Minecraft:   ' + "${MC_VERSION}".toString())
-System.out.println('- Forge:       ' + "${forge_version}".toString())
-System.out.println('- Mappings:    ' + "${mappings_version}".toString())
+System.out.println('- Minecraft:   	   ' + "${MC_VERSION}".toString())
+System.out.println('- Forge:   	   ' + "${forge_version}".toString())
+System.out.println('- Mappings:   	   ' + "${mappings_version}".toString())
 System.out.println()
 System.out.println('Mod Information')
-System.out.println('- ID: 	       ' + "${mod_name}".toString())
-System.out.println('- Name:        ' + "${mod_archivesBaseName}".toString())
-System.out.println('- Version:     ' + "${version}".toString())
+System.out.println('- ID:   	   ' + "${mod_name}".toString())
+System.out.println('- Name:   	   ' + "${mod_archivesBaseName}".toString())
+System.out.println('- Version:   	   ' + "${version}".toString())
 System.out.println()
 System.out.println()
-
-apply from: 'gradle/forge.gradle'
-apply from: 'utilities.gradle'
-apply from: 'gradle/development.gradle'
-apply from: 'gradle/deploy.gradle'
-apply from: 'gradle/versioning.gradle'
-apply from: 'gradle/license.gradle'
-
-//apply from: 'https://raw.githubusercontent.com/ReadOnlyDevelopment/gradle/galacticraft/dev-latest.gradle'
-
-String gcbuild = "261"
-String gcversion = "1.12.2-4.0.2.${gcbuild}"
 
 repositories {
 	ivy {
 		url "https://micdoodle8.com/new-builds/"
 		layout 'pattern', {
-			artifact "[organization]/${gcbuild}/[module]-[revision].jar"
+			artifact "[organization]/${GC_BUILD}/[module]-[revision].jar"
 		}
 		metadataSources {
 			artifact()
@@ -92,20 +101,10 @@ repositories {
 }
 
 dependencies {
-	compile "GC-1.12-dev:GalacticraftCore-Dev:${gcversion}"
-	compile "GC-1.12-dev:Galacticraft-API:${gcversion}"
-	compile "GC-1.12-dev:Galacticraft-Planets-Dev:${gcversion}"
-	compile "GC-1.12-dev:MicdoodleCore-Dev:${gcversion}"
-}
-
-String getBuildNumber() {
-	def versionFile = file('version.properties')
-	if (versionFile.canRead()) {
-		Properties versionProps = new Properties()
-		versionProps.load(new FileInputStream(versionFile))
-		return versionProps['build_num'].toString()
-	}
-	return "0"
+	compile "GC-1.12-dev:GalacticraftCore-Dev:${GC_FULL_VERSION}"
+	compile "GC-1.12-dev:Galacticraft-API:${GC_FULL_VERSION}"
+	compile "GC-1.12-dev:Galacticraft-Planets-Dev:${GC_FULL_VERSION}"
+	compile "GC-1.12-dev:MicdoodleCore-Dev:${GC_FULL_VERSION}"
 }
 
 task incrementBuild {
@@ -144,4 +143,3 @@ task cleanBuild {
 
 build.dependsOn signJar
 build.finalizedBy incrementBuild // only increment on successful builds
-incrementBuild.finalizedBy copyToDependentLib
