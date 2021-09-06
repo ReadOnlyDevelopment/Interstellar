@@ -1,0 +1,45 @@
+def getVersion = {
+	//TAG-offset-hash
+	def raw = grgit.describe(longDescr: true, tags:true)
+	def desc = (raw == null ? '0.0-0-unknown' : grgit.describe(longDescr: true, tags:true)).split('-') as List
+	def hash = desc.remove(desc.size() - 1)
+	def offset = desc.remove(desc.size() - 1)
+	def tag = desc.join('-')
+	def branch = grgit.branch.current().name
+	if (branch in ['master', 'HEAD', MC_VERSION, MC_VERSION + '.0'])
+		branch = null
+	if (branch != null && branch.endsWith('.x') && MC_VERSION.startsWith(branch.substring(0, branch.length() - 2))) //1.13.x
+		branch = null
+	SPEC_VERSION = tag
+	BUILD_NUMBER = LEGACY_BUILD + offset.toInteger()
+	return "${MC_VERSION}-${LEGACY_MAJOR}.${tag}.${BUILD_NUMBER}${t -> if (branch != null) t << '-' + branch}".toString() //Bake the response instead of making it dynamic
+}
+
+def getBuildNumber() {
+	def versionFile = file('version.properties')
+	if (versionFile.canRead()) {
+		Properties versionProps = new Properties()
+		versionProps.load(new FileInputStream(versionFile))
+		return versionProps['build_num'].toString()
+	}
+	return "0"
+}
+
+def incrementBuild {
+	def versionFile = file('version.properties')
+	if (versionFile.canRead()) {
+		Properties versionProps = new Properties()
+		versionProps.load(new FileInputStream(versionFile))
+		def num = versionProps['build_num'].toInteger() + 1
+		println("incrementing BuildNumber to: " + num)
+		versionProps['build_num'] = num.toString()
+		versionProps.store(versionFile.newWriter(), null)
+	} else {
+		println("version.properties file not found! Ignoring.")
+	}
+}
+
+ext {
+	getBuildNumber = this.&getBuildNumber
+	incrementBuild = this.&incrementBuild
+}

@@ -13,12 +13,27 @@ buildscript {
 
 plugins {
 	id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.71.4"
+	id 'com.github.ben-manes.versions' version '0.22.0'
 	id 'org.cadixdev.licenser' version '0.5.1'
 	id 'com.github.kt3k.coveralls' version '2.8.2'
 	id 'org.ajoberstar.grgit' version '3.1.1'
 	id 'eclipse'
 	id 'java'
 }
+
+ext {
+	MC_VERSION = '1.12.2'
+	MANIFESTS = [
+		'/': [
+			'Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+			'GitCommit': grgit.head().abbreviatedId,
+			'Git-Branch': grgit.branch.current().getName()
+		] as LinkedHashMap
+	]
+}
+
+System.out.println(grgit.head().abbreviatedId)
+System.out.println(grgit.branch.current().getName())
 
 defaultTasks 'cleanBuild'
 
@@ -41,7 +56,7 @@ System.out.println('- JVM:    	   ' + System.getProperty('java.vm.version') + ' 
 System.out.println('- Arch:  	   ' + System.getProperty('os.arch'))
 System.out.println()
 System.out.println('Minecraft Information')
-System.out.println('- Minecraft:   ' + "${minecraft_version}".toString())
+System.out.println('- Minecraft:   ' + "${MC_VERSION}".toString())
 System.out.println('- Forge:       ' + "${forge_version}".toString())
 System.out.println('- Mappings:    ' + "${mappings_version}".toString())
 System.out.println()
@@ -53,7 +68,7 @@ System.out.println()
 System.out.println()
 
 apply from: 'gradle/forge.gradle'
-
+apply from: 'utilities.gradle'
 apply from: 'gradle/development.gradle'
 apply from: 'gradle/deploy.gradle'
 apply from: 'gradle/versioning.gradle'
@@ -95,17 +110,7 @@ String getBuildNumber() {
 
 task incrementBuild {
 	doFirst {
-		def versionFile = file('version.properties')
-		if (versionFile.canRead()) {
-			Properties versionProps = new Properties()
-			versionProps.load(new FileInputStream(versionFile))
-			def num = versionProps['build_num'].toInteger() + 1
-			println("incrementing BuildNumber to: " + num)
-			versionProps['build_num'] = num.toString()
-			versionProps.store(versionFile.newWriter(), null)
-		} else {
-			println("version.properties file not found! Ignoring.")
-		}
+		incrementBuild
 	}
 }
 
