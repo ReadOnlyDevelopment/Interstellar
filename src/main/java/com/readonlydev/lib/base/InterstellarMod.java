@@ -19,6 +19,7 @@
 
 package com.readonlydev.lib.base;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -28,10 +29,13 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.readonlydev.api.mod.IEventListener;
 import com.readonlydev.api.mod.IIDProvider;
 import com.readonlydev.api.proxy.IProxy;
+import com.readonlydev.lib.base.config.ReadOnlyConfig;
+import com.readonlydev.lib.celestial.CelestialAsset;
 import com.readonlydev.lib.registry.IEntryClass;
 import com.readonlydev.lib.registry.InterstellarRegistry;
 import com.readonlydev.lib.version.Version;
@@ -55,7 +59,10 @@ public abstract class InterstellarMod implements IIDProvider {
 	private final Version version;
 	private final Logger logger;
 	private final Set<IEventListener> eventListeners = new HashSet<>();
+	private final Set<ReadOnlyConfig> configFiles = new HashSet<>();
 	private final Map<KeyReference<?>, Object> keyReference = new HashMap<>();
+	private final CelestialAsset celestialAssetClass;
+	private File configDirectory;
 
 	protected final InterstellarRegistry registry;
 
@@ -70,6 +77,7 @@ public abstract class InterstellarMod implements IIDProvider {
 		putKeyReference(KEY_VERSION, annotation.version());
 		this.logger = LogManager.getLogger(annotation.name());
 		this.registry = new InterstellarRegistry();
+		this.celestialAssetClass = new CelestialAsset(this);
 	}
 
 	public InterstellarMod enableUpdateChecks() {
@@ -151,7 +159,8 @@ public abstract class InterstellarMod implements IIDProvider {
 
 	public void onPreInit(FMLPreInitializationEvent event) {
 		log(Level.TRACE, "preInit()");
-
+		configDirectory = new File(event.getModConfigurationDirectory(), modName);
+		handleConfigSet();
 		registry.setMod(getModObject());
 		registry.getRecipeBuilder();
 
@@ -184,6 +193,17 @@ public abstract class InterstellarMod implements IIDProvider {
 
 	protected <T extends IForgeRegistryEntry<T>> void addContentClass(IEntryClass<T> registryClazz) {
 		registry.addRegistrationHandler(registryClazz::register, registryClazz.getEntry());
+	}
+
+	protected void configFiles(ReadOnlyConfig... configs) {
+		synchronized (configFiles) {
+			configFiles.addAll(Lists.newArrayList(configs));
+		}
+	}
+
+	private void handleConfigSet() {
+		configFiles.forEach(ReadOnlyConfig::setConfigFile);
+		configFiles.forEach(ReadOnlyConfig::loadConfig);
 	}
 
 	@Override
