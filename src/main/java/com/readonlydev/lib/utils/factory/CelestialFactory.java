@@ -1,6 +1,6 @@
 package com.readonlydev.lib.utils.factory;
 
-public interface CelestialFactory<T> {
+public abstract class CelestialFactory<T> {
 
-	public T build();
+	public abstract T build();
 }
