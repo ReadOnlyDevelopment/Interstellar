@@ -1,7 +1,7 @@
 package com.readonlydev.lib.celestial.objects;
 
-import com.readonlydev.api.celestial.IHabitableZone;
 import com.readonlydev.api.celestial.IStar;
+import com.readonlydev.lib.celestial.HabitableZone;
 import com.readonlydev.lib.celestial.Physics;
 import com.readonlydev.lib.celestial.data.Mass;
 import com.readonlydev.lib.celestial.data.Radius;
@@ -28,22 +28,26 @@ public class ExoStar extends Star implements IStar {
 	private Radius radius;
 	private Temperature temperature;
 	private String spectralClassifcation;
-	private IHabitableZone habitableZone;
+	private HabitableZone habitableZone;
 
 	private ExoStar(Builder builder) {
 		super(builder.starName);
 		this.setRelativeSize(builder.size);
 		this.setTierRequired(-1);
 		this.setBodyIcon(builder.icon);
-		this.habitableZone = builder.zone;
 		this.mass = builder.mass;
 		this.radius = builder.radius;
 		this.temperature = builder.temperature;
 		this.spectralClassifcation = builder.spectralClassifcation;
+		this.habitableZone = new HabitableZone(this);
 	}
 
 	public void setSolarSystem(ExoStarSystem system) {
 		this.setParentSolarSystem(system);
+	}
+
+	public ExoStarSystem getStarSystem() {
+		return (ExoStarSystem) super.getParentSolarSystem();
 	}
 
 	@Override
@@ -67,7 +71,7 @@ public class ExoStar extends Star implements IStar {
 	}
 
 	@Override
-	public IHabitableZone getHabitableZone() {
+	public HabitableZone getHabitableZone() {
 		return habitableZone;
 	}
 
@@ -92,15 +96,14 @@ public class ExoStar extends Star implements IStar {
 		return (2.0 * gConst * getMass().getValue() * sMass / (spdLight * spdLight)) / (1000.0 * sRadi);
 	}
 
-	public static CelestialFactory<ExoStar> factory() {
+	public static ExoStar.Builder factory() {
 		return new ExoStar.Builder();
 	}
 
-	static final class Builder implements CelestialFactory<ExoStar> {
+	public static final class Builder extends CelestialFactory<ExoStar> {
 		private String starName;
 		private float size = 1.0F;
 		private ResourceLocation icon;
-		private IHabitableZone zone;
 		private Mass mass;
 		private Radius radius;
 		private Temperature temperature;
@@ -138,11 +141,6 @@ public class ExoStar extends Star implements IStar {
 
 		public Builder icon(ResourceLocation icon) {
 			this.icon = icon;
-			return this;
-		}
-
-		public Builder habitableZone(IHabitableZone zone) {
-			this.zone = zone;
 			return this;
 		}
 

@@ -139,11 +139,11 @@ public class Exoplanet extends Planet implements IExoplanet {
 		return daylength;
 	}
 
-	public static CelestialFactory<Exoplanet> factory() {
+	public static Exoplanet.Builder factory() {
 		return new Exoplanet.Builder();
 	}
 
-	static final class Builder implements CelestialFactory<Exoplanet> {
+	public static final class Builder extends CelestialFactory<Exoplanet> {
 
 		private String planetName;
 		private float relativeSize;

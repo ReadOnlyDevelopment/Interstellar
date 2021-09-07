@@ -17,7 +17,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package com.readonlydev.lib.utils;
+package com.readonlydev.lib.utils.system;
 
 import org.lwjgl.input.Keyboard;
 

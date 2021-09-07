@@ -45,11 +45,11 @@ public class ExoStarSystem extends SolarSystem implements ISystem {
 		return mainStar;
 	}
 
-	public static CelestialFactory<ExoStarSystem> factory() {
+	public static ExoStarSystem.Builder factory() {
 		return new ExoStarSystem.Builder();
 	}
 
-	static final class Builder implements CelestialFactory<ExoStarSystem> {
+	public static final class Builder extends CelestialFactory<ExoStarSystem> {
 		private String systemName;
 		private String galaxy;
 		private Vec mapPosition;

@@ -1,4 +1,4 @@
-package com.readonlydev.lib.utils;
+package com.readonlydev.lib.utils.system;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,11 +13,11 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.google.common.collect.ImmutableList;
 import com.readonlydev.api.log.ILog;
 
 import lombok.Getter;
 import net.minecraftforge.fml.common.Mod;
-import scala.actors.threadpool.Arrays;
 
 public class Log implements ILog {
 	private static final Map<String, Log> LOGGER_BY_MODNAME = new HashMap<>();
@@ -105,8 +105,8 @@ public class Log implements ILog {
 		this.logger.catching(t);
 	}
 
-	public void bigWarning(String... strings) {
-		noticableWarning(true, Arrays.asList(strings));
+	public void noticableWarning(String... strings) {
+		noticableWarning(true, ImmutableList.copyOf(strings));
 	}
 
 	@Override
