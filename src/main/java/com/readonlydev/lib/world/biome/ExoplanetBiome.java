@@ -2,6 +2,7 @@ package com.readonlydev.lib.world.biome;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Random;
 
 import com.readonlydev.api.InterstellarAPI;
 import com.readonlydev.lib.world.ExoplanetWorld;
@@ -18,6 +19,7 @@ import lombok.Getter;
 import micdoodle8.mods.galacticraft.api.world.BiomeGenBaseGC;
 import net.minecraft.init.Biomes;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraftforge.common.BiomeDictionary;
@@ -53,6 +55,14 @@ public abstract class ExoplanetBiome extends BiomeGenBaseGC implements IExoplane
 		this.surfaceRiver = new SurfaceRiverOasis();
 		this.decos = new ArrayList<>();
 		initDecorations();
+	}
+
+	public abstract void generateSurface(World worldIn, Random rand, ChunkPrimer chunkPrimerIn, int x, int z,
+			double noiseVal);
+
+	@Override
+	public void genTerrainBlocks(World worldIn, Random rand, ChunkPrimer chunkPrimerIn, int x, int z, double noiseVal) {
+		generateSurface(worldIn, rand, chunkPrimerIn, x, z, noiseVal);
 	}
 
 	@Override
@@ -310,5 +320,34 @@ public abstract class ExoplanetBiome extends BiomeGenBaseGC implements IExoplane
 			}
 			return rtgBiome;
 		}
+	}
+
+	@Override
+	public SurfaceBase initSurfaceBase() {
+		return null;
+	}
+
+	@Override
+	public TerrainBase initTerrainBase() {
+		return null;
+	}
+
+	@Override
+	public double waterLakeMult() {
+		return 0;
+	}
+
+	@Override
+	public double lavaLakeMult() {
+		return 0;
+	}
+
+	@Override
+	public void initDecorations() {
+
+	}
+
+	public void addTypes() {
+
 	}
 }

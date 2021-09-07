@@ -87,6 +87,4 @@ public interface IExoplanetBiome {
 	TerrainBase initTerrainBase();
 
 	SurfaceBase initSurfaceBase();
-
-	void initConfig();
 }

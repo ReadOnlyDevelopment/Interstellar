@@ -52,13 +52,13 @@ public class ChunkGenerator implements IChunkGen {
 	private Random rand;
 	private Biome[] baseBiomesList;
 
-	public ChunkGenerator(ExoplanetWorld exoWorld) {
+	public ChunkGenerator(World world, long seed, boolean flag) {
+		this.world = world;
+		this.exoWorld = ExoplanetWorld.getInstance(world);
 
 		Interstellar.log.debug("Instantiating CPRTG using generator settings: {}",
 				exoWorld.world().getWorldInfo().getGeneratorOptions());
 
-		this.world = exoWorld.world();
-		this.exoWorld = exoWorld;
 		this.settings = exoWorld.getGeneratorSettings();
 
 		this.rand = new Random(exoWorld.seed());
