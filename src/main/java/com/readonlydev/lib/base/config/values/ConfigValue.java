@@ -12,6 +12,8 @@ public abstract class ConfigValue {
 	private Key key;
 	private Category category;
 	private Comment comment;
+	private boolean requiresWorldRestart = false;
+	private boolean requiresGameRestart = false;
 
 	public ConfigValue(Type type, String key, Category category) {
 		this(key, category, null);
@@ -67,6 +69,24 @@ public abstract class ConfigValue {
 
 	public String comment() {
 		return this.comment.get();
+	}
+
+	public ConfigValue requiresWorldRestart() {
+		this.requiresWorldRestart = true;
+		return this;
+	}
+
+	public ConfigValue requiresGameRestart() {
+		this.requiresGameRestart = true;
+		return this;
+	}
+
+	public boolean needsWorldRestart() {
+		return this.requiresWorldRestart;
+	}
+
+	public boolean needsGameRestart() {
+		return this.requiresGameRestart;
 	}
 
 	public enum Type {

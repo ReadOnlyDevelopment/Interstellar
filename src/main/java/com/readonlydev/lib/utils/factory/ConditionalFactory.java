@@ -22,7 +22,7 @@ package com.readonlydev.lib.utils.factory;
 import java.util.function.BooleanSupplier;
 
 import com.google.gson.JsonObject;
-import com.readonlydev.lib.utils.JavaUtil;
+import com.readonlydev.lib.asm.ReflectionMethods;
 
 import io.netty.util.internal.StringUtil;
 import net.minecraftforge.common.crafting.IConditionFactory;
@@ -56,7 +56,7 @@ public class ConditionalFactory {
 
 	public static IConditionFactory getCondition(String address, Boolean fallback) {
 		if (!StringUtil.isNullOrEmpty(address)) {
-			IConditionFactory cf = JavaUtil.getClassInstance(address, IConditionFactory.class);
+			IConditionFactory cf = ReflectionMethods.getInstance(address, IConditionFactory.class);
 			return cf;
 		} else if (StringUtil.isNullOrEmpty(address) && fallback == true) {
 			return new GenericTrueFactory();

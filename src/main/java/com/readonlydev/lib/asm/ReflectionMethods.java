@@ -22,10 +22,8 @@ public class ReflectionMethods {
 	/**
 	 * Creates a new instance with the provided constructor and arguments.
 	 *
-	 * @param constructor The constructor of the class for which a new instance
-	 *                    should be created.
-	 * @param arguments   Array of objects to be passed as arguments to the
-	 *                    constructor call.
+	 * @param constructor The constructor of the class for which a new instance should be created.
+	 * @param arguments   Array of objects to be passed as arguments to the constructor call.
 	 * @return A new object created by calling the constructor.
 	 */
 	public static <T> T getInstance(Constructor<T> constructor, Object... arguments) {
@@ -34,25 +32,35 @@ public class ReflectionMethods {
 		} catch (Exception e) {
 			Interstellar.log.error("Exception creating instance of " + constructor.getClass().getName(), e);
 		}
+		return null;
+	}
 
+	@SuppressWarnings("unchecked")
+	public static <T> T getInstance(String className, Class<T> assignable) {
+		try {
+			Class<?> clazz = Class.forName(className);
+			if (!assignable.isAssignableFrom(assignable)) {
+				throw new RuntimeException("Class '" + className + "' is not assignable from " + assignable.getSimpleName());
+			}
+			return (T) clazz.newInstance();
+		} catch (InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+			Interstellar.log.error("Exception creating instance of " + className, e);
+		}
 		return null;
 	}
 
 	/**
-	 * Obtains the constructor for the named class identified by the parameter
-	 * types.
+	 * Obtains the constructor for the named class identified by the parameter types.
 	 *
 	 * @param className     The fully qualified name of the class.
 	 * @param argumentTypes Parameter types to identify the constructor.
-	 * @return Constructor object representing the declared constructor for the
-	 *         parameter types.
+	 * @return Constructor object representing the declared constructor for the parameter types.
 	 */
 	public static Constructor<?> getConstructor(final String className, final Class<?>... argumentTypes) {
 		if (className == null || argumentTypes == null) {
 			Interstellar.log.error("The provided class name or arguments can't be null.");
 			return null;
 		}
-
 		try {
 			Class<?> clazz = Class.forName(className);
 			Constructor<?> constructor = clazz.getDeclaredConstructor(argumentTypes);
@@ -61,7 +69,6 @@ public class ReflectionMethods {
 		} catch (Exception ex) {
 			Interstellar.log.error("Exception getting constructor of " + className, ex);
 		}
-
 		return null;
 	}
 
@@ -70,8 +77,7 @@ public class ReflectionMethods {
 	 *
 	 * @param clazz The Class for which the constructor should be obtained.
 	 * @param types Parameter types to identify the constructor.
-	 * @return Constructor object representing the declared constructor for the
-	 *         parameter types.
+	 * @return Constructor object representing the declared constructor for the parameter types.
 	 */
 	public static <T> Constructor<T> getConstructor(Class<T> clazz, Class<?>... types) {
 		try {
@@ -81,18 +87,14 @@ public class ReflectionMethods {
 		} catch (Exception ex) {
 			Interstellar.log.error("Exception getting constructor of " + clazz.getName(), ex);
 		}
-
 		return null;
 	}
 
 	/**
 	 * Returns the value of a private field for an object instance.
 	 *
-	 * @param object     An object instance from which the field value is to be
-	 *                   extracted.
-	 * @param fieldNames A list of field names for which the value should be
-	 *                   extracted. The functions returns value of the first field
-	 *                   found.
+	 * @param object     An object instance from which the field value is to be extracted.
+	 * @param fieldNames A list of field names for which the value should be extracted. The functions returns value of the first field found.
 	 * @return The value of the provided field name.
 	 */
 	@SuppressWarnings("unchecked")
@@ -107,21 +109,16 @@ public class ReflectionMethods {
 				Interstellar.log.error("Exception in getObject()", ex);
 			}
 		}
-
 		Interstellar.log.error("Could not retrieve any object for the provided field names.");
 
 		return null;
 	}
 
 	/**
-	 * Returns the value of a private final field for an object instance and removes
-	 * the final modifier.
+	 * Returns the value of a private final field for an object instance and removes the final modifier.
 	 *
-	 * @param object     An object instance from which the field value is to be
-	 *                   extracted.
-	 * @param fieldNames A list of field names for which the value should be
-	 *                   extracted. The functions returns value of the first field
-	 *                   found.
+	 * @param object     An object instance from which the field value is to be extracted.
+	 * @param fieldNames A list of field names for which the value should be extracted. The functions returns value of the first field found.
 	 * @return The value of the provided field name.
 	 */
 	@SuppressWarnings("unchecked")
@@ -139,7 +136,6 @@ public class ReflectionMethods {
 				Interstellar.log.error("Exception in getFinalObject()", ex);
 			}
 		}
-
 		Interstellar.log.error("Could not retrieve any final object for the provided field names.");
 
 		return null;
@@ -149,8 +145,7 @@ public class ReflectionMethods {
 	 * Returns the value of a private static field for a class.
 	 *
 	 * @param clazz      The class for which the field value is to be extracted.
-	 * @param fieldNames A list of field names for which the value should be
-	 *                   extracted.
+	 * @param fieldNames A list of field names for which the value should be extracted.
 	 * @return The value of the provided field name.
 	 */
 	@SuppressWarnings("unchecked")
@@ -164,7 +159,6 @@ public class ReflectionMethods {
 				Interstellar.log.error("Exception in getStaticObject()", e);
 			}
 		}
-
 		Interstellar.log.error("Could not retrieve any static object for the provided field names.");
 
 		return null;
@@ -174,8 +168,7 @@ public class ReflectionMethods {
 	 * Returns the value of a private static field for a class.
 	 *
 	 * @param className  The fully qualified name of the class.
-	 * @param fieldNames A list of field names for which the value should be
-	 *                   extracted.
+	 * @param fieldNames A list of field names for which the value should be extracted.
 	 * @return The value of the provided field name.
 	 */
 	public static <T> T getStaticObject(String className, String... fieldNames) {
@@ -185,7 +178,6 @@ public class ReflectionMethods {
 		} catch (ClassNotFoundException e) {
 			Interstellar.log.error("Exception in getStaticObject()", e);
 		}
-
 		Interstellar.log.error("Could not retrieve any static object for the provided field names.");
 
 		return null;
@@ -202,8 +194,7 @@ public class ReflectionMethods {
 	}
 
 	@SuppressWarnings("unchecked")
-	public static <T, E> T getPrivateValue(Class<? super E> classToAccess, @Nullable E instance, String fieldName,
-			@Nullable String fieldObfName) {
+	public static <T, E> T getPrivateValue(Class<? super E> classToAccess, @Nullable E instance, String fieldName, @Nullable String fieldObfName) {
 		try {
 			return (T) findField(classToAccess, fieldName, fieldObfName).get(instance);
 		} catch (Exception e) {
@@ -212,8 +203,7 @@ public class ReflectionMethods {
 		return null;
 	}
 
-	public static <T, E> void setPrivateValue(Class<? super T> classToAccess, @Nullable T instance, @Nullable E value,
-			String fieldName) {
+	public static <T, E> void setPrivateValue(Class<? super T> classToAccess, @Nullable T instance, @Nullable E value, String fieldName) {
 		try {
 			findField(classToAccess, fieldName, null).set(instance, value);
 		} catch (Exception e) {
@@ -221,8 +211,7 @@ public class ReflectionMethods {
 		}
 	}
 
-	public static <T, E> void setPrivateValue(Class<? super T> classToAccess, @Nullable T instance, @Nullable E value,
-			String fieldName, @Nullable String fieldObfName) {
+	public static <T, E> void setPrivateValue(Class<? super T> classToAccess, @Nullable T instance, @Nullable E value, String fieldName, @Nullable String fieldObfName) {
 		try {
 			findField(classToAccess, fieldName, fieldObfName).set(instance, value);
 		} catch (Exception e) {
@@ -234,9 +223,7 @@ public class ReflectionMethods {
 		Preconditions.checkNotNull(clazz);
 		Preconditions.checkArgument(StringUtils.isNotEmpty(fieldName), "Field name cannot be empty");
 
-		String nameToFind = MinecraftUtil.isDevelopmentEnvironment() ? fieldName
-				: MoreObjects.firstNonNull(fieldObfName, fieldName);
-
+		String nameToFind = MinecraftUtil.isDevelopmentEnvironment() ? fieldName : MoreObjects.firstNonNull(fieldObfName, fieldName);
 		try {
 			Field f = clazz.getDeclaredField(nameToFind);
 			f.setAccessible(true);

@@ -21,6 +21,7 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.common.config.ConfigCategory;
 import net.minecraftforge.common.config.ConfigElement;
 import net.minecraftforge.common.config.Configuration;
+import net.minecraftforge.common.config.Property;
 import net.minecraftforge.fml.client.config.IConfigElement;
 import net.minecraftforge.fml.client.event.ConfigChangedEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
@@ -68,8 +69,7 @@ public abstract class ReadOnlyConfig {
 	}
 
 	public boolean hasProperty(ConfigValue prop) {
-		return this.properties.stream().anyMatch(property -> property.category().contentEquals(prop.category())
-				&& property.key().contentEquals(prop.key()));
+		return this.properties.stream().anyMatch(property -> property.category().contentEquals(prop.category()) && property.key().contentEquals(prop.key()));
 	}
 
 	@SafeVarargs
@@ -81,12 +81,9 @@ public abstract class ReadOnlyConfig {
 	}
 
 	public void loadConfig() {
-
 		config = initConfig();
-
 		try {
 			config.load();
-
 			for (Category configCategory : configCats) {
 				ConfigCategory category = getCategory(configCategory);
 				category.setComment(configCategory.getCatgeoryComment());
@@ -94,96 +91,106 @@ public abstract class ReadOnlyConfig {
 				category.setRequiresWorldRestart(configCategory.requiresWorldRestart);
 				category.setLanguageKey(clazz.getModId() + configCategory.getLangKey());
 			}
-
 			for (ConfigValue prop : this.properties) {
-
 				try {
+					Property property;
 					switch (prop.getType()) {
 					case INTEGER:
 						ConfigInteger propInt = (ConfigInteger) prop;
-						int intVal;
 						if (propInt.hasRange()) {
-							intVal = config.get(propInt.category(), propInt.key(), propInt.get(), propInt.comment(),
-									propInt.min(), propInt.max()).setLanguageKey(propInt.langKey()).getInt();
+							property = config.get(propInt.category(), propInt.key(), propInt.get(), propInt.comment(), propInt.min(), propInt.max()).setLanguageKey(propInt.langKey());
 						} else {
-							intVal = config.get(propInt.category(), propInt.key(), propInt.get(), propInt.comment())
-									.setLanguageKey(propInt.langKey()).getInt();
+							property = config.get(propInt.category(), propInt.key(), propInt.get(), propInt.comment()).setLanguageKey(propInt.langKey());
 						}
-						propInt.set(intVal);
+						if (propInt.needsGameRestart()) {
+							property.setRequiresMcRestart(true);
+						}
+						if (propInt.needsWorldRestart()) {
+							property.setRequiresWorldRestart(true);
+						}
+						propInt.set(property.getInt());
 						break;
-
 					case INTEGER_ARRAY:
 						ConfigArrayInteger propIntArray = (ConfigArrayInteger) prop;
-						int[] intArray;
 						if (propIntArray.hasRange()) {
-							intArray = config
-									.get(propIntArray.category(), propIntArray.key(), propIntArray.get(),
-											propIntArray.comment(), propIntArray.min(), propIntArray.max())
-									.setLanguageKey(propIntArray.langKey()).getIntList();
+							property = config.get(propIntArray.category(), propIntArray.key(), propIntArray.get(), propIntArray.comment(), propIntArray.min(), propIntArray.max()).setLanguageKey(propIntArray.langKey());
 						} else {
-							intArray = config.get(propIntArray.category(), propIntArray.key(), propIntArray.get(),
-									propIntArray.comment()).setLanguageKey(propIntArray.langKey()).getIntList();
+							property = config.get(propIntArray.category(), propIntArray.key(), propIntArray.get(), propIntArray.comment()).setLanguageKey(propIntArray.langKey());
 						}
-						propIntArray.set(intArray);
+						if (propIntArray.needsGameRestart()) {
+							property.setRequiresMcRestart(true);
+						}
+						if (propIntArray.needsWorldRestart()) {
+							property.setRequiresWorldRestart(true);
+						}
+						propIntArray.set(property.getIntList());
 						break;
-
 					case DOUBLE:
 						ConfigDouble propDouble = (ConfigDouble) prop;
-						double doubleVal;
 						if (propDouble.hasRange()) {
-							doubleVal = config
-									.get(propDouble.category(), propDouble.key(), propDouble.get(),
-											propDouble.comment(), propDouble.min(), propDouble.max())
-									.setLanguageKey(propDouble.langKey()).getDouble();
+							property = config.get(propDouble.category(), propDouble.key(), propDouble.get(), propDouble.comment(), propDouble.min(), propDouble.max()).setLanguageKey(propDouble.langKey());
 						} else {
-							doubleVal = config.get(propDouble.category(), propDouble.key(), propDouble.get(),
-									propDouble.comment()).setLanguageKey(propDouble.langKey()).getDouble();
+							property = config.get(propDouble.category(), propDouble.key(), propDouble.get(), propDouble.comment()).setLanguageKey(propDouble.langKey());
 						}
-						propDouble.set(doubleVal);
+						if (propDouble.needsGameRestart()) {
+							property.setRequiresMcRestart(true);
+						}
+						if (propDouble.needsWorldRestart()) {
+							property.setRequiresWorldRestart(true);
+						}
+						propDouble.set(property.getDouble());
 						break;
-
 					case DOUBLE_ARRAY:
 						ConfigArrayDouble propDoubleArray = (ConfigArrayDouble) prop;
-						double[] doubleArrayVal;
 						if (propDoubleArray.hasRange()) {
-							doubleArrayVal = config
-									.get(propDoubleArray.category(), propDoubleArray.key(), propDoubleArray.get(),
-											propDoubleArray.comment(), propDoubleArray.min(), propDoubleArray.max())
-									.setLanguageKey(propDoubleArray.langKey()).getDoubleList();
+							property = config.get(propDoubleArray.category(), propDoubleArray.key(), propDoubleArray.get(), propDoubleArray.comment(), propDoubleArray.min(), propDoubleArray.max()).setLanguageKey(propDoubleArray.langKey());
 						} else {
-							doubleArrayVal = config
-									.get(propDoubleArray.category(), propDoubleArray.key(), propDoubleArray.get(),
-											propDoubleArray.comment())
-									.setLanguageKey(propDoubleArray.langKey()).getDoubleList();
+							property = config.get(propDoubleArray.category(), propDoubleArray.key(), propDoubleArray.get(), propDoubleArray.comment()).setLanguageKey(propDoubleArray.langKey());
 						}
-						propDoubleArray.set(doubleArrayVal);
+						if (propDoubleArray.needsGameRestart()) {
+							property.setRequiresMcRestart(true);
+						}
+						if (propDoubleArray.needsWorldRestart()) {
+							property.setRequiresWorldRestart(true);
+						}
+						propDoubleArray.set(property.getDoubleList());
 						break;
-
 					case BOOLEAN:
 						ConfigBoolean propBool = (ConfigBoolean) prop;
-						propBool.set(config.getBoolean(propBool.key(), propBool.category(), propBool.get(),
-								propBool.comment(), propBool.langKey()));
+						property = config.get(propBool.category(), propBool.key(), propBool.get(), propBool.comment()).setLanguageKey(propBool.langKey());
+						if (propBool.needsGameRestart()) {
+							property.setRequiresMcRestart(true);
+						}
+						if (propBool.needsWorldRestart()) {
+							property.setRequiresWorldRestart(true);
+						}
+						propBool.set(property.getBoolean());
 						break;
-
 					case STRING:
 						ConfigString propString = (ConfigString) prop;
-						String Stringvalue;
 						if (propString.needsValidation()) {
-							Stringvalue = config.getString(propString.key(), propString.category(), propString.get(),
-									propString.comment(), propString.getValidValues(),
-									propString.getValidValuesDisplay(), propString.langKey());
+							property = config.get(propString.category(), propString.key(), propString.get(), propString.comment(), propString.getValidValues(), propString.getValidValuesDisplay()).setLanguageKey(propString.langKey());
 						} else {
-							Stringvalue = config.getString(propString.key(), propString.category(), propString.get(),
-									propString.comment(), propString.langKey());
+							property = config.get(propString.category(), propString.key(), propString.get(), propString.comment()).setLanguageKey(propString.langKey());
 						}
-						propString.set(Stringvalue);
+						if (propString.needsGameRestart()) {
+							property.setRequiresMcRestart(true);
+						}
+						if (propString.needsWorldRestart()) {
+							property.setRequiresWorldRestart(true);
+						}
+						propString.set(property.getString());
 						break;
 					case STRING_ARRAY:
 						ConfigArrayString propStringArray = (ConfigArrayString) prop;
-						propStringArray.set(config
-								.get(propStringArray.category(), propStringArray.key(), propStringArray.get(),
-										propStringArray.comment())
-								.setLanguageKey(propStringArray.langKey()).getStringList());
+						property = config.get(propStringArray.category(), propStringArray.key(), propStringArray.get(), propStringArray.comment()).setLanguageKey(propStringArray.langKey());
+						if (propStringArray.needsGameRestart()) {
+							property.setRequiresMcRestart(true);
+						}
+						if (propStringArray.needsWorldRestart()) {
+							property.setRequiresWorldRestart(true);
+						}
+						propStringArray.set(property.getStringList());
 						break;
 					}
 				} catch (Exception e) {

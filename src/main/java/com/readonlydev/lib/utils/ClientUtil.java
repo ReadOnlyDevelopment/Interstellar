@@ -19,12 +19,14 @@
 
 package com.readonlydev.lib.utils;
 
+import lombok.experimental.UtilityClass;
 import net.minecraft.client.Minecraft;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+@UtilityClass
 public class ClientUtil {
 
 	/**
@@ -47,4 +49,13 @@ public class ClientUtil {
 		return Minecraft.getMinecraft() != null ? Minecraft.getMinecraft().player : null;
 	}
 
+	/**
+	 * Gets the client if and ONLY IF called from Client.
+	 *
+	 * @return the client player
+	 */
+	@SideOnly(Side.CLIENT)
+	public static Minecraft getClient() {
+		return (MinecraftUtil.isClientSide()) ? Minecraft.getMinecraft() : null;
+	}
 }
