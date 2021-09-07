@@ -24,11 +24,12 @@
 
 package com.readonlydev.api.celestial;
 
+import com.readonlydev.lib.celestial.HabitableZone;
 import com.readonlydev.lib.celestial.data.Temperature;
 
 public interface IStar extends ICelestialObject {
 
-	IHabitableZone getHabitableZone();
+	HabitableZone getHabitableZone();
 
 	Temperature getSurfaceTemperature();
 
