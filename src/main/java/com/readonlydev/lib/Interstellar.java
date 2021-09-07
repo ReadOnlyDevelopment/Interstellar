@@ -22,21 +22,22 @@ package com.readonlydev.lib;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.readonlydev.api.InterstellarAPI;
 import com.readonlydev.api.proxy.IProxy;
 import com.readonlydev.lib.base.InterstellarMod;
 import com.readonlydev.lib.command.TPCommand;
 import com.readonlydev.lib.exception.InvalidFingerprintException;
 import com.readonlydev.lib.guide.example.InterstellarGuide;
 import com.readonlydev.lib.network.InterstellarNetwork;
-import com.readonlydev.lib.utils.Log;
+import com.readonlydev.lib.utils.MinecraftUtil;
+import com.readonlydev.lib.utils.system.Log;
+import com.readonlydev.lib.world.biome.ExoplanetBiome;
 
-import net.minecraft.launchwrapper.Launch;
 import net.minecraft.world.DimensionType;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
 import net.minecraftforge.fml.common.Mod.Instance;
 import net.minecraftforge.fml.common.SidedProxy;
-import net.minecraftforge.fml.common.discovery.ASMDataTable;
 import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
@@ -51,9 +52,7 @@ public class Interstellar extends InterstellarMod {
 
 	public static final Map<String, String> invalidCertificates = new HashMap<>();
 
-	public static boolean inObfEnv = false;
 	public static InterstellarNetwork network;
-	public static ASMDataTable asmDataTable;
 
 	public static Log log;
 
@@ -65,8 +64,17 @@ public class Interstellar extends InterstellarMod {
 		_instance = this;
 		log = new Log(this, 11/* Integer.valueOf(LibInfo.BUILD) */);
 		network = new InterstellarNetwork("Interstellar");
-		inObfEnv = !(boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
 		InterstellarGuide.preInitGuideLoader();
+	}
+
+	@EventHandler
+	public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
+		if (MinecraftUtil.isDevelopmentEnvironment()) {
+			Interstellar.log.info("Ignoring fingerprint signing since we are in a Development Environment");
+			return;
+		} else {
+			throw new InvalidFingerprintException(event);
+		}
 	}
 
 	@Mod.EventHandler
@@ -97,7 +105,7 @@ public class Interstellar extends InterstellarMod {
 
 		// NetworkRegistry.INSTANCE.registerGuiHandler(_instance,
 		// InterstellarGuiHandler.instance());
-
+		InterstellarAPI.INTERSTELLAR_BIOME_MAP.addBiomes(registry.getBIOMES().toArray(new ExoplanetBiome[0]));
 		proxy.postInit(registry, event);
 		super.onPostInit(event);
 	}
@@ -111,16 +119,6 @@ public class Interstellar extends InterstellarMod {
 			Interstellar.log.info("TYPE NAME: " + type.getName());
 			Interstellar.log.info("TYPE ID: " + type.getId());
 
-		}
-	}
-
-	@EventHandler
-	public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
-		if ((Boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment")) {
-			Interstellar.log.info("Ignoring fingerprint signing since we are in a Development Environment");
-			return;
-		} else {
-			throw new InvalidFingerprintException(event);
 		}
 	}
 }

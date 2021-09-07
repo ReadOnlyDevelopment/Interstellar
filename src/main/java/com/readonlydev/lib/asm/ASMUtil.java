@@ -51,6 +51,7 @@ import org.objectweb.asm.util.Textifier;
 import org.objectweb.asm.util.TraceMethodVisitor;
 
 import com.readonlydev.lib.Interstellar;
+import com.readonlydev.lib.utils.MinecraftUtil;
 
 public class ASMUtil {
 	/**
@@ -326,7 +327,7 @@ public class ASMUtil {
 	 */
 	public static Field changeFieldAccess(Class<?> clazz, String fieldName, String srgName, boolean silenced) {
 		try {
-			Field f = clazz.getDeclaredField(Interstellar.inObfEnv ? srgName : fieldName);
+			Field f = clazz.getDeclaredField(MinecraftUtil.isDevelopmentEnvironment() ? srgName : fieldName);
 			f.setAccessible(true);
 			Field modifiers = Field.class.getDeclaredField("modifiers");
 			modifiers.setAccessible(true);
@@ -336,7 +337,7 @@ public class ASMUtil {
 		} catch (ReflectiveOperationException e) {
 			if (!silenced) {
 				Interstellar.log.error("Could not change access for field " + clazz.getSimpleName() + "."
-						+ (Interstellar.inObfEnv ? srgName : fieldName), e);
+						+ (MinecraftUtil.isDevelopmentEnvironment() ? srgName : fieldName), e);
 			}
 			return null;
 		}
@@ -405,12 +406,12 @@ public class ASMUtil {
 	public static Method changeMethodAccess(Class<?> clazz, String methodName, String srgName, boolean silenced,
 			Class<?>... params) {
 		try {
-			Method m = clazz.getDeclaredMethod(Interstellar.inObfEnv ? srgName : methodName, params);
+			Method m = clazz.getDeclaredMethod(MinecraftUtil.isDevelopmentEnvironment() ? srgName : methodName, params);
 			m.setAccessible(true);
 			return m;
 		} catch (ReflectiveOperationException e) {
 			Interstellar.log.error("Could not change access for method " + clazz.getSimpleName() + "."
-					+ (Interstellar.inObfEnv ? srgName : methodName), e);
+					+ (MinecraftUtil.isDevelopmentEnvironment() ? srgName : methodName), e);
 		}
 
 		return null;

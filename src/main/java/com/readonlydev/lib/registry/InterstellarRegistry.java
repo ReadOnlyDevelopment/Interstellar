@@ -114,7 +114,7 @@ public class InterstellarRegistry {
 	@Getter
 	private final List<IFluidBlock> FLUID_BLOCKS = NonNullList.create();
 	@Getter
-	private final List<Biome> BIOMES = NonNullList.create();
+	private final List<ExoplanetBiome> BIOMES = NonNullList.create();
 
 	private final List<IRecipeProcessor> recipeAdders = NonNullList.create();
 

@@ -134,7 +134,7 @@ public class TPCommand extends CommandTeleport {
 	private static World getWorldForDimensionServer(int id) {
 		World world = DimensionManager.getWorld(id);
 		if (world == null) {
-			Interstellar.log.bigWarning("getWorldForDimensionServer returned NULL!");
+			Interstellar.log.noticableWarning("getWorldForDimensionServer returned NULL!");
 		}
 		return world;
 	}
