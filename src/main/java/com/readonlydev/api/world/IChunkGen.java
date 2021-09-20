@@ -5,14 +5,16 @@ import javax.annotation.Nullable;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.chunk.ChunkPrimer;
 import net.minecraft.world.gen.IChunkGenerator;
 
 public interface IChunkGen extends IChunkGenerator {
 
+	public void setBlocksInChunk(int chunkX, int chunkZ, ChunkPrimer primer);
+
 	@Override
 	@Nullable
-	public BlockPos getNearestStructurePos(World worldIn, String structureName, BlockPos position,
-			boolean findUnexplored);
+	public BlockPos getNearestStructurePos(World worldIn, String structureName, BlockPos position, boolean findUnexplored);
 
 	@Override
 	public boolean generateStructures(Chunk chunkIn, int x, int z);

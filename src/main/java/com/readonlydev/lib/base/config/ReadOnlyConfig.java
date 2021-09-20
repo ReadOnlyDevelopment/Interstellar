@@ -31,7 +31,7 @@ public abstract class ReadOnlyConfig {
 	private final String fileName;
 	private File configFile;
 	private ConfigVersion Configversion;
-	private final InterstellarMod clazz;
+	protected final InterstellarMod mod;
 	protected List<ConfigValue> properties = new ArrayList<>();
 	protected List<String> propOrder = new ArrayList<>();
 	protected List<Category> configCats = new ArrayList<>();
@@ -40,7 +40,7 @@ public abstract class ReadOnlyConfig {
 
 	protected ReadOnlyConfig(InterstellarMod clazz, String fileName) {
 		this.fileName = fileName;
-		this.clazz = clazz;
+		this.mod = clazz;
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 
@@ -53,7 +53,7 @@ public abstract class ReadOnlyConfig {
 	}
 
 	public void setConfigFile() {
-		this.configFile = new File(clazz.getConfigDirectory(), fileName + ".cfg");
+		this.configFile = new File(mod.getConfigDirectory(), fileName + ".cfg");
 	}
 
 	protected void setConfigversion(ConfigVersion configversion) {
@@ -89,7 +89,7 @@ public abstract class ReadOnlyConfig {
 				category.setComment(configCategory.getCatgeoryComment());
 				category.setRequiresMcRestart(configCategory.requiresMCRestart);
 				category.setRequiresWorldRestart(configCategory.requiresWorldRestart);
-				category.setLanguageKey(clazz.getModId() + configCategory.getLangKey());
+				category.setLanguageKey(mod.getModId() + configCategory.getLangKey());
 			}
 			for (ConfigValue prop : this.properties) {
 				try {
@@ -194,14 +194,14 @@ public abstract class ReadOnlyConfig {
 						break;
 					}
 				} catch (Exception e) {
-					clazz.getLogger().error("Issue with Prop: {} of type {}", prop.key(), prop.getType().name());
-					clazz.getLogger().catching(e);
+					mod.getLogger().error("Issue with Prop: {} of type {}", prop.key(), prop.getType().name());
+					mod.getLogger().catching(e);
 				} finally {
 					config.setCategoryPropertyOrder(prop.category(), this.propOrder);
 				}
 			}
 		} catch (Exception ignored) {
-			clazz.getLogger().error("Uh, we had a problem loading config: {}", config.getConfigFile());
+			mod.getLogger().error("Uh, we had a problem loading config: {}", config.getConfigFile());
 		}
 		saveConfig();
 	}
@@ -232,7 +232,7 @@ public abstract class ReadOnlyConfig {
 
 	@SubscribeEvent
 	public void onConfigChanged(ConfigChangedEvent.OnConfigChangedEvent event) {
-		if (event.getModID().equalsIgnoreCase(clazz.getModId())) {
+		if (event.getModID().equalsIgnoreCase(mod.getModId())) {
 			saveConfig();
 			loadConfig();
 		}

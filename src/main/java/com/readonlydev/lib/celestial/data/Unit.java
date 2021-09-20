@@ -7,4 +7,6 @@ public abstract class Unit {
 
 	protected NumberFormat format = new DecimalFormat("###.###########################################");
 
+	public abstract UnitType getUnitType();
+
 }

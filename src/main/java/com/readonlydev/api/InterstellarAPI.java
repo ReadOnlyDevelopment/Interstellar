@@ -31,9 +31,9 @@ import javax.annotation.Nonnull;
 import org.apache.logging.log4j.Level;
 
 import com.google.common.collect.Lists;
+import com.readonlydev.api.world.biome.IBiomeExoplanet;
 import com.readonlydev.lib.Interstellar;
-import com.readonlydev.lib.world.BiomeMap;
-import com.readonlydev.lib.world.biome.IExoplanetBiome;
+import com.readonlydev.lib.world.biome.BiomeMap;
 
 import lombok.experimental.UtilityClass;
 import net.minecraft.world.biome.Biome;
@@ -44,14 +44,14 @@ import net.minecraft.world.gen.layer.GenLayerRiverMix;
 public class InterstellarAPI {
 	public static final String APIVERSION = "1.0.0";
 
-	public static final BiomeMap INTERSTELLAR_BIOME_MAP = new BiomeMap();
+	public static final BiomeMap EXOPLANET_BIOME_MAP = new BiomeMap();
 
-	public static IExoplanetBiome getBiome(@Nonnull Biome biome) {
-		return INTERSTELLAR_BIOME_MAP.get(biome);
+	public static IBiomeExoplanet getBiomeExoplanet(@Nonnull Biome biome) {
+		return EXOPLANET_BIOME_MAP.get(biome);
 	}
 
-	public static IExoplanetBiome getBiome(int biomeId) {
-		return INTERSTELLAR_BIOME_MAP.getValueAt(biomeId);
+	public static IBiomeExoplanet getBiomeExoplanet(int biomeId) {
+		return EXOPLANET_BIOME_MAP.getValueAt(biomeId);
 	}
 
 	public static final class Debug {
@@ -82,14 +82,10 @@ public class InterstellarAPI {
 					riverLayer = riverLayer.parent;
 				}
 			}
-
 			if (biomeStack.isEmpty() || riverStack.isEmpty()) {
 				Interstellar.log.log(level, "\nGenLayer stack:\n{}", String.join("\n  ", initialStack));
 			} else {
-				Interstellar.log.log(level,
-						"\nInitial GenLayer stack:\n  {}\nBiome GenLayer stack:\n  {}\nRiver GenLayer stack:\n  {}",
-						String.join("\n  ", initialStack), String.join("\n  ", biomeStack),
-						String.join("\n  ", riverStack));
+				Interstellar.log.log(level, "\nInitial GenLayer stack:\n  {}\nBiome GenLayer stack:\n  {}\nRiver GenLayer stack:\n  {}", String.join("\n  ", initialStack), String.join("\n  ", biomeStack), String.join("\n  ", riverStack));
 			}
 		}
 	}

@@ -3,6 +3,8 @@ package com.readonlydev.lib.asm;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
+import java.util.HashMap;
+import java.util.Optional;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -18,6 +20,8 @@ import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class ReflectionMethods {
+
+	private static HashMap<String, Field> sFieldCache = new HashMap<>();
 
 	/**
 	 * Creates a new instance with the provided constructor and arguments.
@@ -149,38 +153,15 @@ public class ReflectionMethods {
 	 * @return The value of the provided field name.
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> T getStaticObject(Class<?> clazz, String... fieldNames) {
-		for (String field : fieldNames) {
-			try {
-				Field result = clazz.getDeclaredField(field);
-				result.setAccessible(true);
-				return (T) result.get(null);
-			} catch (Exception e) {
-				Interstellar.log.error("Exception in getStaticObject()", e);
-			}
-		}
-		Interstellar.log.error("Could not retrieve any static object for the provided field names.");
-
-		return null;
-	}
-
-	/**
-	 * Returns the value of a private static field for a class.
-	 *
-	 * @param className  The fully qualified name of the class.
-	 * @param fieldNames A list of field names for which the value should be extracted.
-	 * @return The value of the provided field name.
-	 */
-	public static <T> T getStaticObject(String className, String... fieldNames) {
+	public static <T> Optional<T> getStaticObject(Class<?> clazz, String fieldName) {
+		Optional<T> object = Optional.empty();
 		try {
-			Class<?> clazz = Class.forName(className);
-			return getStaticObject(clazz, fieldNames);
-		} catch (ClassNotFoundException e) {
-			Interstellar.log.error("Exception in getStaticObject()", e);
+			Field result = clazz.getDeclaredField(fieldName);
+			result.setAccessible(true);
+			object = Optional.of((T) result.get(null));
+		} catch (Exception e) {
 		}
-		Interstellar.log.error("Could not retrieve any static object for the provided field names.");
-
-		return null;
+		return object;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -232,5 +213,58 @@ public class ReflectionMethods {
 			e.getStackTrace();
 		}
 		return null;
+	}
+
+	public static void setStaticFieldObject(Class<?> clazz, String fieldName, Object value) {
+		Field field = getStaticField(clazz, fieldName);
+		try {
+			field.set(clazz, value);
+		} catch (IllegalArgumentException | IllegalAccessException e) {
+			Interstellar.log.error("An error occured when attempting to set static Field [ " + fieldName + " ]");
+		}
+	}
+
+	private static Field getStaticField(Class<?> clazz, String fieldName) {
+		Preconditions.checkNotNull(clazz);
+		Preconditions.checkArgument(StringUtils.isNotEmpty(fieldName), "Field name cannot be empty");
+
+		String fullFieldName = genFieldFullName(clazz, fieldName);
+		if (sFieldCache.containsKey(fullFieldName)) {
+			return sFieldCache.get(fullFieldName);
+		}
+		Field field = null;
+		try {
+			field = clazz.getField(fieldName);
+		} catch (NoSuchFieldException e) {
+		}
+		if (field == null) {
+			try {
+				field = clazz.getDeclaredField(fieldName);
+				field.setAccessible(true);
+			} catch (NoSuchFieldException e) {
+			}
+		}
+		if (field == null) {
+			for (clazz = clazz.getSuperclass(); clazz != Object.class; clazz = clazz.getSuperclass()) {
+				try {
+					field = clazz.getDeclaredField(fieldName);
+					field.setAccessible(true);
+				} catch (NoSuchFieldException e) {
+				}
+			}
+		}
+		if (field == null) {
+			Interstellar.log.error("Can't get [ " + fieldName + " ] Field from Class [ " + clazz.getSimpleName() + " ]");
+		}
+		sFieldCache.put(fullFieldName, field);
+		return field;
+	}
+
+	private static String genFieldFullName(Class<?> clazz, String fieldName) {
+		StringBuilder name = new StringBuilder();
+		name.append(clazz.getName());
+		name.append(":");
+		name.append(fieldName);
+		return name.toString();
 	}
 }

@@ -63,8 +63,7 @@ public interface IndexedMap<K, V, I extends Comparable<I>> extends Map<K, V>, Se
 		}
 	}
 
-	interface IndexMapEntry<K, V, I extends Comparable<I>>
-			extends Entry<K, V>, Comparable<IndexMapEntry<K, V, I>>, Serializable {
+	interface IndexMapEntry<K, V, I extends Comparable<I>> extends Entry<K, V>, Comparable<IndexMapEntry<K, V, I>>, Serializable {
 
 		I getIndex();
 
@@ -118,8 +117,7 @@ public interface IndexedMap<K, V, I extends Comparable<I>> extends Map<K, V>, Se
 					return false;
 				}
 				IndexEntryBase<?, ?, ?> other = (IndexEntryBase<?, ?, ?>) o;
-				return Objects.equals(getKey(), other.getKey()) && Objects.equals(getValue(), other.getValue())
-						&& Objects.equals(getIndex(), other.getIndex());
+				return Objects.equals(getKey(), other.getKey()) && Objects.equals(getValue(), other.getValue()) && Objects.equals(getIndex(), other.getIndex());
 			}
 
 			@Override
@@ -140,8 +138,7 @@ public interface IndexedMap<K, V, I extends Comparable<I>> extends Map<K, V>, Se
 					super(key, value, index);
 				}
 
-				public SimpleMutableIndexEntry(@Nonnull final K key, @Nonnull final V value,
-						@Nonnull final Function<K, I> indexer) {
+				public SimpleMutableIndexEntry(@Nonnull final K key, @Nonnull final V value, @Nonnull final Function<K, I> indexer) {
 					super(key, value, indexer.apply(key));
 				}
 
@@ -151,8 +148,7 @@ public interface IndexedMap<K, V, I extends Comparable<I>> extends Map<K, V>, Se
 				}
 			}
 
-			public static class SimpleImmutableIndexEntry<K, V, I extends Comparable<I>>
-					extends IndexEntryBase<K, V, I> {
+			public static class SimpleImmutableIndexEntry<K, V, I extends Comparable<I>> extends IndexEntryBase<K, V, I> {
 
 				private static final long serialVersionUID = 2533506876382702762L;
 
@@ -160,8 +156,7 @@ public interface IndexedMap<K, V, I extends Comparable<I>> extends Map<K, V>, Se
 					super(key, value, index);
 				}
 
-				public SimpleImmutableIndexEntry(@Nonnull final K key, @Nonnull final V value,
-						@Nonnull final Function<K, I> indexer) {
+				public SimpleImmutableIndexEntry(@Nonnull final K key, @Nonnull final V value, @Nonnull final Function<K, I> indexer) {
 					super(key, value, indexer.apply(key));
 				}
 

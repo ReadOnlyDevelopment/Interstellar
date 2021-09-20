@@ -1,5 +1,7 @@
 package com.readonlydev.lib.celestial.data;
 
+import static com.readonlydev.lib.celestial.data.UnitType.ABSOLUTE;
+
 import com.readonlydev.lib.celestial.Physics;
 import com.readonlydev.lib.celestial.SpaceCalculations;
 
@@ -11,28 +13,14 @@ import com.readonlydev.lib.celestial.SpaceCalculations;
  */
 public class Mass extends Unit {
 
-	public static enum Unit {
-		SOLAR("M☉"), EARTH("M⊕"), ABSOLUTE("Kg");
-
-		private final String symbol;
-
-		Unit(String symbol) {
-			this.symbol = symbol;
-		}
-
-		String getSymbol() {
-			return symbol;
-		}
-	}
-
 	private final double absoluteValue;
-	private Mass.Unit unit;
+	private UnitType unit;
 
 	public Mass(double value) {
-		this(value, Mass.Unit.ABSOLUTE);
+		this(value, ABSOLUTE);
 	}
 
-	public Mass(double value, Mass.Unit unit) {
+	public Mass(double value, UnitType unit) {
 		this.unit = unit;
 		absoluteValue = toAbsolute(value);
 	}
@@ -75,18 +63,19 @@ public class Mass extends Unit {
 		return fromAbsolute(absoluteValue);
 	}
 
-	public Mass.Unit getMassUnit() {
+	@Override
+	public UnitType getUnitType() {
 		return unit;
 	}
 
-	public Mass toMassUnit(Mass.Unit unit) {
+	public Mass toMassUnit(UnitType unit) {
 		this.unit = unit;
 		return this;
 	}
 
 	@Override
 	public String toString() {
-		return getValue() + " " + unit.getSymbol();
+		return getUnitType() == ABSOLUTE ? getValue() + " Kg" : getValue() + " M" + unit.getSymbol();
 	}
 
 	/**

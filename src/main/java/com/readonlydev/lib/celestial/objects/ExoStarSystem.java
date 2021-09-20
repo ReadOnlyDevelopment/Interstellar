@@ -2,42 +2,48 @@ package com.readonlydev.lib.celestial.objects;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-import com.readonlydev.api.celestial.IExoplanet;
-import com.readonlydev.api.celestial.ISystem;
-import com.readonlydev.lib.celestial.data.Vec;
+import com.readonlydev.api.celestial.ICelestialObject;
+import com.readonlydev.lib.celestial.data.Mass;
+import com.readonlydev.lib.celestial.data.Radius;
+import com.readonlydev.lib.celestial.data.Temperature;
 import com.readonlydev.lib.utils.factory.CelestialFactory;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import micdoodle8.mods.galacticraft.api.galaxies.SolarSystem;
+import micdoodle8.mods.galacticraft.api.vector.Vector3;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class ExoStarSystem extends SolarSystem implements ISystem {
+public class ExoStarSystem extends SolarSystem implements ICelestialObject {
 
 	private ExoStar mainStar;
-	private List<IExoplanet> planetList = new ArrayList<>();
+	private List<Exoplanet> planetList = new ArrayList<>();
 
 	private ExoStarSystem(Builder builder) {
 		super(builder.systemName, builder.galaxy);
-		this.setMainStar(builder.mainStar);
-		this.setMapPosition(builder.mapPosition.toVector3());
-		this.mainStar = builder.mainStar;
+		this.setMapPosition(builder.mapPosition);
+		this.mainStar = ExoStar.factory(this).mass(builder.mass).radius(builder.radius).temp(builder.temp).spectralType(builder.specialType).build();
+		this.setMainStar(getMainStar());
 	}
 
-	public boolean addPlanet(IExoplanet exoplanet) {
+	public boolean addPlanet(Exoplanet exoplanet) {
 		return planetList.add(exoplanet);
 	}
 
 	@Override
-	public List<IExoplanet> getPlanetsList() {
+	public String getCelestialName() {
+		return super.getName().toUpperCase(Locale.ENGLISH);
+	}
+
+	public List<Exoplanet> getPlanetsList() {
 		return planetList;
 	}
 
-	@Override
-	public IExoplanet[] getPlanets() {
-		return planetList.toArray(new IExoplanet[planetList.size()]);
+	public Exoplanet[] getPlanets() {
+		return planetList.toArray(new Exoplanet[planetList.size()]);
 	}
 
 	@Override
@@ -45,33 +51,33 @@ public class ExoStarSystem extends SolarSystem implements ISystem {
 		return mainStar;
 	}
 
-	public static ExoStarSystem.Builder factory() {
-		return new ExoStarSystem.Builder();
+	public static ExoStarSystem.Builder factory(String name) {
+		return new ExoStarSystem.Builder(name);
 	}
 
 	public static final class Builder extends CelestialFactory<ExoStarSystem> {
 		private String systemName;
-		private String galaxy;
-		private Vec mapPosition;
-		private ExoStar mainStar;
+		private String galaxy = "milky_way";
+		private Vector3 mapPosition;
+		private Mass mass;
+		private Radius radius;
+		private Temperature temp;
+		private String specialType;
 
-		public Builder name(String systemName) {
-			this.systemName = systemName;
+		private Builder(String name) {
+			this.systemName = name;
+		}
+
+		public Builder position(Vector3 vector3) {
+			this.mapPosition = vector3;
 			return this;
 		}
 
-		public Builder galaxy(String galaxy) {
-			this.galaxy = galaxy;
-			return this;
-		}
-
-		public Builder position(double x, double y, double z) {
-			this.mapPosition = Vec.of(x, y, z);
-			return this;
-		}
-
-		public Builder mainStar(ExoStar mainStar) {
-			this.mainStar = mainStar;
+		public Builder mainStarProperties(Mass mass, Radius radius, Temperature temp, String specialType) {
+			this.mass = mass;
+			this.radius = radius;
+			this.temp = temp;
+			this.specialType = specialType;
 			return this;
 		}
 

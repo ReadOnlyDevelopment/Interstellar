@@ -19,17 +19,16 @@
 
 package com.readonlydev.lib.celestial.objects;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.google.common.collect.Lists;
-import com.readonlydev.api.celestial.IExoplanet;
-import com.readonlydev.api.celestial.IMoon;
-import com.readonlydev.api.celestial.IStar;
+import com.readonlydev.api.celestial.ICelestialObject;
 import com.readonlydev.lib.celestial.Physics;
 import com.readonlydev.lib.celestial.data.Mass;
 import com.readonlydev.lib.celestial.data.Radius;
 import com.readonlydev.lib.celestial.data.Temperature;
+import com.readonlydev.lib.celestial.data.UnitType;
 import com.readonlydev.lib.celestial.enums.HabitabilityClassification;
 import com.readonlydev.lib.celestial.enums.PlanetType;
 import com.readonlydev.lib.utils.factory.CelestialFactory;
@@ -37,6 +36,7 @@ import com.readonlydev.lib.utils.factory.CelestialFactory;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import micdoodle8.mods.galacticraft.api.galaxies.Planet;
+import micdoodle8.mods.galacticraft.api.galaxies.SolarSystem;
 import micdoodle8.mods.galacticraft.api.world.AtmosphereInfo;
 import micdoodle8.mods.galacticraft.api.world.EnumAtmosphericGas;
 import net.minecraft.util.ResourceLocation;
@@ -45,17 +45,18 @@ import net.minecraft.world.biome.Biome;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
-public class Exoplanet extends Planet implements IExoplanet {
+public class Exoplanet extends Planet implements ICelestialObject {
 
 	private Mass mass;
 	private Radius radius;
 	private Temperature temperature;
-	private ExoStar hostStar;
 	private long daylength;
-	private final List<IMoon> moons = new ArrayList<>();
 
-	private Exoplanet(Exoplanet.Builder builder) {
-		super(builder.planetName);
+	public Exoplanet(String name) {
+		super(name);
+	}
+
+	private Exoplanet buildExoplanet(Exoplanet.Builder builder) {
 		this.setParentSolarSystem(builder.parentSolarSystem);
 		this.setRelativeSize(builder.relativeSize);
 		this.setRelativeDistanceFromCenter(builder.distance);
@@ -71,81 +72,65 @@ public class Exoplanet extends Planet implements IExoplanet {
 		this.radius = builder.radius;
 		this.temperature = builder.temperature;
 		this.daylength = builder.daylength;
-		this.hostStar = builder.parentSolarSystem.getMainStar();
+		return this;
 	}
 
 	@Override
+	public Exoplanet setParentSolarSystem(SolarSystem galaxy) {
+		this.getParentSolarSystem().addPlanet(this);
+		return (Exoplanet) super.setParentSolarSystem(galaxy);
+	}
+
+	@Override
+	public String getCelestialName() {
+		return super.getName().toUpperCase(Locale.ENGLISH);
+	}
+
 	public Mass getMass() {
 		return mass;
 	}
 
-	@Override
 	public Radius getRadius() {
 		return radius;
 	}
 
-	@Override
 	public Temperature getTemperature() {
 		return temperature;
 	}
 
-	@Override
-	public IStar getHostStar() {
-		return hostStar;
-	}
-
-	public boolean addMoon(IMoon... moon) {
-		return moons.addAll(moons);
-	}
-
-	@Override
-	public List<IMoon> getMoonsList() {
-		return moons;
-	}
-
-	@Override
-	public IMoon[] getMoons() {
-		return moons.toArray(new IMoon[0]);
-	}
-
-	@Override
 	public PlanetType getPlanetType() {
 		return PlanetType.getPlanetType(this);
 	}
 
-	@Override
 	public HabitabilityClassification getHabitabilityClassification() {
 		return HabitabilityClassification.getTPHClassification(this);
 	}
 
-	@Override
 	public double getSurfaceGravity() {
-		getMass().toMassUnit(Mass.Unit.ABSOLUTE);
+		getMass().toMassUnit(UnitType.ABSOLUTE);
 		double mass = getMass().getValue();
-		getMass().toMassUnit(Mass.Unit.EARTH);
-		getRadius().toRadiusUnit(Radius.Unit.ABSOLUTE);
+		getMass().toMassUnit(UnitType.EARTH);
+		getRadius().toRadiusUnit(UnitType.ABSOLUTE);
 		double radius = getRadius().getValue();
-		getRadius().toRadiusUnit(Radius.Unit.EARTH);
+		getRadius().toRadiusUnit(UnitType.EARTH);
 		return (Physics.GRAVITATIONAL_CONSTANT * mass) / Math.pow(radius, 2.0);
 	}
 
-	@Override
-	public double getShwartzchildRadius() {
-		return 0;
-	}
-
-	@Override
 	public long getDayLength() {
 		return daylength;
 	}
 
-	public static Exoplanet.Builder factory() {
-		return new Exoplanet.Builder();
+	@Override
+	public ExoStarSystem getParentSolarSystem() {
+		return (ExoStarSystem) super.getParentSolarSystem();
+	}
+
+	public static Exoplanet.Builder factory(String name) {
+		return new Exoplanet.Builder(new Exoplanet(name));
 	}
 
 	public static final class Builder extends CelestialFactory<Exoplanet> {
 
-		private String planetName;
 		private float relativeSize;
 		private ScalableDistance distance;
 		private float relativeOrbitTime;
@@ -167,9 +152,10 @@ public class Exoplanet extends Planet implements IExoplanet {
 		private Radius radius;
 		private Temperature temperature;
 
-		public Builder name(String planetName) {
-			this.planetName = planetName;
-			return this;
+		private final Exoplanet exoplanet;
+
+		private Builder(Exoplanet exoplanet) {
+			this.exoplanet = exoplanet;
 		}
 
 		public Builder daylength(long daylength) {
@@ -178,12 +164,12 @@ public class Exoplanet extends Planet implements IExoplanet {
 		}
 
 		public Builder mass(double mass) {
-			this.mass = new Mass(mass, Mass.Unit.EARTH);
+			this.mass = new Mass(mass, UnitType.EARTH);
 			return this;
 		}
 
 		public Builder radius(double radius) {
-			this.radius = new Radius(radius, Radius.Unit.EARTH);
+			this.radius = new Radius(radius, UnitType.EARTH);
 			return this;
 		}
 
@@ -273,7 +259,7 @@ public class Exoplanet extends Planet implements IExoplanet {
 
 		@Override
 		public Exoplanet build() {
-			return new Exoplanet(this);
+			return this.exoplanet.buildExoplanet(this);
 		}
 	}
 }

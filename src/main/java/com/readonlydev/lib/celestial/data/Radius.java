@@ -1,32 +1,20 @@
 package com.readonlydev.lib.celestial.data;
 
+import static com.readonlydev.lib.celestial.data.UnitType.ABSOLUTE;
+
 import com.readonlydev.lib.celestial.Physics;
 import com.readonlydev.lib.celestial.SpaceCalculations;
 
-public class Radius {
-
-	public static enum Unit {
-		SOLAR("R☉"), EARTH("R⊕"), ABSOLUTE("km");
-
-		private final String symbol;
-
-		Unit(String symbol) {
-			this.symbol = symbol;
-		}
-
-		String getSymbol() {
-			return symbol;
-		}
-	}
+public class Radius extends Unit {
 
 	private final double absoluteValue;
-	private Radius.Unit unit;
+	private UnitType unit;
 
 	public Radius(double value) {
-		this(value, Radius.Unit.ABSOLUTE);
+		this(value, ABSOLUTE);
 	}
 
-	public Radius(double value, Radius.Unit unit) {
+	public Radius(double value, UnitType unit) {
 		this.unit = unit;
 		absoluteValue = toAbsolute(value);
 	}
@@ -69,18 +57,19 @@ public class Radius {
 		return fromAbsolute(absoluteValue);
 	}
 
-	public Radius.Unit getRadiusUnit() {
+	@Override
+	public UnitType getUnitType() {
 		return unit;
 	}
 
-	public Radius toRadiusUnit(Radius.Unit unit) {
+	public Radius toRadiusUnit(UnitType unit) {
 		this.unit = unit;
 		return this;
 	}
 
 	@Override
 	public String toString() {
-		return getValue() + " " + unit.getSymbol();
+		return getUnitType() == ABSOLUTE ? getValue() + " km" : getValue() + " R" + unit.getSymbol();
 	}
 
 	public boolean isBetween(double min, double max) {

@@ -31,7 +31,7 @@ import com.readonlydev.lib.guide.example.InterstellarGuide;
 import com.readonlydev.lib.network.InterstellarNetwork;
 import com.readonlydev.lib.utils.MinecraftUtil;
 import com.readonlydev.lib.utils.system.Log;
-import com.readonlydev.lib.world.biome.ExoplanetBiome;
+import com.readonlydev.lib.world.biome.BiomeExoplanet;
 
 import net.minecraft.world.DimensionType;
 import net.minecraftforge.fml.common.Mod;
@@ -80,7 +80,6 @@ public class Interstellar extends InterstellarMod {
 	@Mod.EventHandler
 	@Override
 	public void onPreInit(FMLPreInitializationEvent event) {
-
 		// PacketRegistry.registerPackets(network);
 
 		// REGISTRY.addRegistrationHandler(InterstellarItems::registerItems,
@@ -102,10 +101,9 @@ public class Interstellar extends InterstellarMod {
 
 	@Override
 	public void onPostInit(FMLPostInitializationEvent event) {
-
 		// NetworkRegistry.INSTANCE.registerGuiHandler(_instance,
 		// InterstellarGuiHandler.instance());
-		InterstellarAPI.INTERSTELLAR_BIOME_MAP.addBiomes(registry.getBIOMES().toArray(new ExoplanetBiome[0]));
+		InterstellarAPI.EXOPLANET_BIOME_MAP.addBiomes(registry.getExoplanetBiomes().toArray(new BiomeExoplanet[0]));
 		proxy.postInit(registry, event);
 		super.onPostInit(event);
 	}
@@ -114,11 +112,9 @@ public class Interstellar extends InterstellarMod {
 	public void onServerStarting(FMLServerStartingEvent event) {
 		registry.registerCommand(new TPCommand());
 		for (DimensionType type : DimensionType.values()) {
-
 			Interstellar.log.info("TYPE SUFFIX: " + type.getSuffix());
 			Interstellar.log.info("TYPE NAME: " + type.getName());
 			Interstellar.log.info("TYPE ID: " + type.getId());
-
 		}
 	}
 }

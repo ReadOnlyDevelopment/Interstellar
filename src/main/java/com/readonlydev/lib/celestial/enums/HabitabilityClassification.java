@@ -19,8 +19,8 @@
 
 package com.readonlydev.lib.celestial.enums;
 
-import com.readonlydev.api.celestial.IExoplanet;
 import com.readonlydev.lib.celestial.data.Temperature;
+import com.readonlydev.lib.celestial.objects.Exoplanet;
 import com.readonlydev.lib.utils.data.ImmutableDataPair;
 
 /**
@@ -74,8 +74,8 @@ public enum HabitabilityClassification {
 	);
 	//@formatter:on
 
-	private ImmutableDataPair<String, String>	descriptor;
-	private ImmutableDataPair<Integer, Integer>	temperateRange;
+	private ImmutableDataPair<String, String> descriptor;
+	private ImmutableDataPair<Integer, Integer> temperateRange;
 
 	HabitabilityClassification(ImmutableDataPair<String, String> descriptor, ImmutableDataPair<Integer, Integer> temperateRange) {
 		this.descriptor = descriptor;
@@ -98,45 +98,20 @@ public enum HabitabilityClassification {
 		return descriptor.getSecond();
 	}
 
-	public static HabitabilityClassification getTPHClassification(IExoplanet exoplanet) {
-		HabitabilityClassification clazz = null;
-		switch (applyData(exoplanet)) {
-			case 1:
-				clazz = HP;
-				break;
-			case 2:
-				clazz = P;
-				break;
-			case 3:
-				clazz = M;
-				break;
-			case 4:
-				clazz = T;
-				break;
-			case 5:
-				clazz = HT;
-				break;
-			case 0:
-				clazz = UNKNOWN;
-				break;
-		}
-		return clazz;
-	}
-
-	private static int applyData(IExoplanet exoplanet) {
+	public static HabitabilityClassification getTPHClassification(Exoplanet exoplanet) {
 		final Temperature temp = exoplanet.getTemperature();
 		if (temp.isLessThan(-50)) {
-			return 1;
+			return HP;
 		} else if (temp.isBetween(-49, 0)) {
-			return 2;
+			return P;
 		} else if (temp.isBetween(1, 49)) {
-			return 3;
+			return M;
 		} else if (temp.isBetween(50, 100)) {
-			return 4;
+			return T;
 		} else if (temp.isMoreThan(101)) {
-			return 5;
+			return HT;
 		} else {
-			return 0;
+			return UNKNOWN;
 		}
 	}
 }

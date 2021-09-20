@@ -20,18 +20,14 @@ import net.minecraft.world.gen.structure.StructureBoundingBox;
 public class GenUtility {
 
 	/**
-	 * Determines if the chunk is already generated, in which case new structures
-	 * cannot be placed
+	 * Determines if the chunk is already generated, in which case new structures cannot be placed
 	 * 
 	 * @param box
 	 * @param world
 	 * @return
 	 */
 	public static boolean chunksGenerated(StructureBoundingBox box, World world) {
-		return world.isChunkGeneratedAt(box.minX >> 4, box.minZ >> 4)
-				|| world.isChunkGeneratedAt(box.minX >> 4, box.maxZ >> 4)
-				|| world.isChunkGeneratedAt(box.maxX >> 4, box.minZ >> 4)
-				|| world.isChunkGeneratedAt(box.maxX >> 4, box.maxZ >> 4);
+		return world.isChunkGeneratedAt(box.minX >> 4, box.minZ >> 4) || world.isChunkGeneratedAt(box.minX >> 4, box.maxZ >> 4) || world.isChunkGeneratedAt(box.maxX >> 4, box.minZ >> 4) || world.isChunkGeneratedAt(box.maxX >> 4, box.maxZ >> 4);
 	}
 
 	/**
@@ -49,8 +45,7 @@ public class GenUtility {
 	/*
 	 * Generates a generator n times in a chunk
 	 */
-	public static void generateN(World worldIn, Random rand, BlockPos pos, int n, int baseY, int randY,
-			WorldGenerator gen) {
+	public static void generateN(World worldIn, Random rand, BlockPos pos, int n, int baseY, int randY, WorldGenerator gen) {
 		randY = randY > 0 ? randY : 1;
 		for (int i = 0; i < n; ++i) {
 			int x = rand.nextInt(16) + 8;
@@ -127,10 +122,9 @@ public class GenUtility {
 	public static int getGroundHeight(BlockPos pos, IChunkGen gen, Rotation rotation) {
 		BlockPos chunk = posToChunk(pos);
 		ChunkPrimer chunkprimer = new ChunkPrimer();
-		// gen.setBlocksInChunk(chunk.getX(), chunk.getZ(), chunkprimer);
+		gen.setBlocksInChunk(chunk.getX(), chunk.getZ(), chunkprimer);
 		int i = 5;
 		int j = 5;
-
 		if (rotation == Rotation.CLOCKWISE_90) {
 			i = -5;
 		} else if (rotation == Rotation.CLOCKWISE_180) {
@@ -139,7 +133,6 @@ public class GenUtility {
 		} else if (rotation == Rotation.COUNTERCLOCKWISE_90) {
 			j = -5;
 		}
-
 		int k = chunkprimer.findGroundBlockIdx(7, 7);
 		int l = chunkprimer.findGroundBlockIdx(7, 7 + j);
 		int i1 = chunkprimer.findGroundBlockIdx(7 + i, 7);
@@ -169,8 +162,7 @@ public class GenUtility {
 		return blocks;
 	}
 
-	public static HashMap<BlockPos, IBlockState> generateSphere(IBlockState state1, IBlockState state2, int size,
-			BlockPos pos) {
+	public static HashMap<BlockPos, IBlockState> generateSphere(IBlockState state1, IBlockState state2, int size, BlockPos pos) {
 		HashMap<BlockPos, IBlockState> blocks = new HashMap<>();
 		int halfSize = (size / 2);
 		for (int i = 0; i <= halfSize; i++) {
@@ -216,21 +208,14 @@ public class GenUtility {
 		if (!world.isAreaLoaded(position, loadedCheckSize)) {
 			return false;
 		}
-
-		for (position = position.add(0, 0, 0); ((position.getY() > 5) && world.isAirBlock(position))
-				|| world.getBlockState(position).getMaterial().isLiquid(); position = position.down()) {
-
+		for (position = position.add(0, 0, 0); ((position.getY() > 5) && world.isAirBlock(position)) || world.getBlockState(position).getMaterial().isLiquid(); position = position.down()) {
 		}
-
 		if (position.getY() <= 4) {
 			return false;
 		}
-
 		for (int i = -checkSize; i <= checkSize; ++i) {
 			for (int j = -checkSize; j <= checkSize; ++j) {
-				if ((world.isAirBlock(position.add(i, -1, j)) && world.isAirBlock(position.add(i, -2, j)))
-						|| (world.getBlockState(position.add(i, -1, j)).getMaterial().isLiquid()
-								&& world.getBlockState(position.add(i, -2, j)).getMaterial().isLiquid())) {
+				if ((world.isAirBlock(position.add(i, -1, j)) && world.isAirBlock(position.add(i, -2, j))) || (world.getBlockState(position.add(i, -1, j)).getMaterial().isLiquid() && world.getBlockState(position.add(i, -2, j)).getMaterial().isLiquid())) {
 					return true;
 				}
 			}

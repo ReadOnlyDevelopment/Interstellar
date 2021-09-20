@@ -6,14 +6,11 @@ import java.util.Random;
 
 import javax.annotation.Nullable;
 
-import com.readonlydev.lib.celestial.objects.Exoplanet;
 import com.readonlydev.lib.world.gen.layer.GenLayerExoplanet;
 
 import micdoodle8.mods.galacticraft.api.galaxies.CelestialBody;
 import micdoodle8.mods.galacticraft.api.prefab.world.gen.BiomeAdaptive;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.World;
-import net.minecraft.world.WorldType;
 import net.minecraft.world.biome.Biome;
 import net.minecraft.world.biome.BiomeCache;
 import net.minecraft.world.biome.BiomeProvider;
@@ -30,21 +27,13 @@ public class BiomeProviderExoplanet extends BiomeProvider {
 	private List<Biome> biomesToSpawnIn;
 	private CelestialBody body;
 
-	protected BiomeProviderExoplanet(Exoplanet exoplanet) {
+	public BiomeProviderExoplanet(long seed, CelestialBody exoplanet) {
 		this.body = exoplanet;
 		this.biomeCache = new BiomeCache(this);
 		this.biomesToSpawnIn = new ArrayList<>();
-	}
-
-	public BiomeProviderExoplanet(long seed, WorldType type, Exoplanet exoplanet) {
-		this(exoplanet);
 		GenLayer[] genLayers = GenLayerExoplanet.createWorld(seed, exoplanet);
 		this.unzoomedBiomes = genLayers[0];
 		this.zoomedBiomes = genLayers[1];
-	}
-
-	public BiomeProviderExoplanet(World world, Exoplanet exoplanet) {
-		this(world.getSeed(), world.getWorldInfo().getTerrainType(), exoplanet);
 	}
 
 	@Override
@@ -64,17 +53,18 @@ public class BiomeProviderExoplanet extends BiomeProvider {
 		return par1;
 	}
 
+	public BiomeExoplanet[] getExoplanetBiomesForGeneration(BiomeExoplanet[] biomes, int x, int z, int length, int width) {
+		return (BiomeExoplanet[]) getBiomesForGeneration(biomes, x, z, length, width);
+	}
+
 	@Override
 	public Biome[] getBiomesForGeneration(Biome[] biomes, int x, int z, int length, int width) {
 		IntCache.resetIntCache();
 		BiomeAdaptive.setBodyMultiBiome(this.body);
-
 		if (biomes == null || biomes.length < length * width) {
 			biomes = new Biome[length * width];
 		}
-
 		int[] intArray = this.unzoomedBiomes.getInts(x, z, length, width);
-
 		for (int i = 0; i < length * width; ++i) {
 			if (intArray[i] >= 0) {
 				biomes[i] = Biome.getBiome(intArray[i]);
@@ -82,8 +72,11 @@ public class BiomeProviderExoplanet extends BiomeProvider {
 				biomes[i] = BiomeAdaptive.biomeDefault;
 			}
 		}
-
 		return biomes;
+	}
+
+	public BiomeExoplanet[] getExoplanetBiomes(@Nullable BiomeExoplanet[] oldBiomeList, int x, int z, int width, int depth) {
+		return (BiomeExoplanet[]) getBiomes(oldBiomeList, x, z, width, depth);
 	}
 
 	@Override
@@ -95,19 +88,15 @@ public class BiomeProviderExoplanet extends BiomeProvider {
 	public Biome[] getBiomes(@Nullable Biome[] listToReuse, int x, int z, int width, int length, boolean cacheFlag) {
 		IntCache.resetIntCache();
 		BiomeAdaptive.setBodyMultiBiome(this.body);
-
 		if (listToReuse == null || listToReuse.length < length * width) {
 			listToReuse = new Biome[width * length];
 		}
-
 		if (cacheFlag && width == 16 && length == 16 && (x & 15) == 0 && (z & 15) == 0) {
 			Biome[] cached = this.biomeCache.getCachedBiomes(x, z);
 			System.arraycopy(cached, 0, listToReuse, 0, width * length);
 			return listToReuse;
 		}
-
 		int[] zoomed = this.zoomedBiomes.getInts(x, z, width, length);
-
 		for (int i = 0; i < width * length; ++i) {
 			if (zoomed[i] >= 0) {
 				listToReuse[i] = Biome.getBiome(zoomed[i]);
@@ -115,7 +104,6 @@ public class BiomeProviderExoplanet extends BiomeProvider {
 				listToReuse[i] = BiomeAdaptive.biomeDefault;
 			}
 		}
-
 		return listToReuse;
 	}
 
@@ -128,15 +116,12 @@ public class BiomeProviderExoplanet extends BiomeProvider {
 		int diffX = (k - i) + 1;
 		int diffZ = (l - j) + 1;
 		int[] unzoomed = this.unzoomedBiomes.getInts(i, j, diffX, diffZ);
-
 		for (int a = 0; a < diffX * diffZ; ++a) {
 			Biome biome = Biome.getBiome(unzoomed[a]);
-
 			if (!viables.contains(biome)) {
 				return false;
 			}
 		}
-
 		return true;
 	}
 
@@ -151,18 +136,15 @@ public class BiomeProviderExoplanet extends BiomeProvider {
 		int[] unzoomed = this.unzoomedBiomes.getInts(i, j, diffX, diffZ);
 		BlockPos blockPos = null;
 		int count = 0;
-
 		for (int a = 0; a < unzoomed.length; ++a) {
 			int x0 = i + a % diffX << 2;
 			int z0 = j + a / diffX << 2;
 			Biome biome = Biome.getBiome(unzoomed[a]);
-
 			if (biomes.contains(biome) && (blockPos == null || random.nextInt(count + 1) == 0)) {
 				blockPos = new BlockPos(x0, 0, z0);
 				count++;
 			}
 		}
-
 		return blockPos;
 	}
 
