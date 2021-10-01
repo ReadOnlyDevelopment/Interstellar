@@ -26,11 +26,11 @@ import com.readonlydev.api.InterstellarAPI;
 import com.readonlydev.api.proxy.IProxy;
 import com.readonlydev.lib.base.InterstellarMod;
 import com.readonlydev.lib.command.TPCommand;
-import com.readonlydev.lib.exception.InvalidFingerprintException;
+import com.readonlydev.lib.exception.InvalidFingerprintError;
 import com.readonlydev.lib.guide.example.InterstellarGuide;
 import com.readonlydev.lib.network.InterstellarNetwork;
+import com.readonlydev.lib.system.Log;
 import com.readonlydev.lib.utils.MinecraftUtil;
-import com.readonlydev.lib.utils.system.Log;
 import com.readonlydev.lib.world.biome.BiomeExoplanet;
 
 import net.minecraft.world.DimensionType;
@@ -71,9 +71,8 @@ public class Interstellar extends InterstellarMod {
 	public void onFingerprintViolation(FMLFingerprintViolationEvent event) {
 		if (MinecraftUtil.isDevelopmentEnvironment()) {
 			Interstellar.log.info("Ignoring fingerprint signing since we are in a Development Environment");
-			return;
 		} else {
-			throw new InvalidFingerprintException(event);
+			new InvalidFingerprintError(log, event);
 		}
 	}
 

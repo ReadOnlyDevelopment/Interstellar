@@ -21,11 +21,12 @@ package com.readonlydev.lib.utils;
 
 import com.readonlydev.lib.LibInfo;
 
+import lombok.experimental.UtilityClass;
 import net.minecraft.client.resources.I18n;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-@SideOnly(Side.CLIENT)
+@UtilityClass
 public class LangUtil {
 
 	@SideOnly(Side.CLIENT)

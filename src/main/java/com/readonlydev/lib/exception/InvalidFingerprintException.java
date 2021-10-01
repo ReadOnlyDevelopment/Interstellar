@@ -21,11 +21,11 @@ package com.readonlydev.lib.exception;
 
 import net.minecraftforge.fml.common.event.FMLFingerprintViolationEvent;
 
-public class InvalidFingerprintException extends RuntimeException {
+public class InvalidFingerprintException extends Exception {
 	private static final long serialVersionUID = -4382006867998166700L;
 
-	private final static String	header				= "Invalid fingerprint detected!";
-	private final static String	yellAboutNoSupport	= "This version will NOT be supported by the developer!";
+	private final static String header = "Invalid fingerprint detected!";
+	private final static String yellAboutNoSupport = "This version will NOT be supported by the developer!";
 
 	public InvalidFingerprintException(FMLFingerprintViolationEvent event) {
 		super(header + event.getSource().getName() + " may have been tampered with. " + yellAboutNoSupport);

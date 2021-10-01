@@ -21,13 +21,16 @@ package com.readonlydev.lib.utils;
 
 import java.util.List;
 
+import lombok.experimental.UtilityClass;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.crafting.Ingredient;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraftforge.oredict.OreDictionary;
 
+@UtilityClass
 public class OreUtil {
+
 	public static boolean compareToOreName(ItemStack stack, String oreName) {
 		if (!isExistingOreName(oreName)) {
 			return false;

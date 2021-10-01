@@ -19,8 +19,10 @@
 
 package com.readonlydev.lib.utils;
 
+import lombok.experimental.UtilityClass;
 import net.minecraft.util.text.TextFormatting;
 
+@UtilityClass
 public class ColorUtil {
 
 	public enum Color implements ITextFormat {
@@ -135,8 +137,8 @@ public class ColorUtil {
 		return (int) (col * 255.0F);
 	}
 
-	public static int	MC_WHITE	= calcMCColor(255, 255, 255);
-	public static int	MC_WHITE_A	= calcMCColor(255, 255, 255, 255);
-	public static int	MC_BLACK	= calcMCColor(0, 0, 0);
-	public static int	MC_BLACK_A	= calcMCColor(0, 0, 0, 255);
+	public static int MC_WHITE = calcMCColor(255, 255, 255);
+	public static int MC_WHITE_A = calcMCColor(255, 255, 255, 255);
+	public static int MC_BLACK = calcMCColor(0, 0, 0);
+	public static int MC_BLACK_A = calcMCColor(0, 0, 0, 255);
 }

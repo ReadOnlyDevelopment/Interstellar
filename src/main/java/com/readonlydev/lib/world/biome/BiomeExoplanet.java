@@ -45,4 +45,9 @@ public abstract class BiomeExoplanet extends BiomeGenBaseGC implements IBiomeExo
 
 	public void addTypes() {
 	}
+
+	@Override
+	public BiomeExoplanet get() {
+		return this;
+	}
 }

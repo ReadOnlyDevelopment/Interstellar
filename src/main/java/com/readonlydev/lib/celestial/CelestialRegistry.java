@@ -1,25 +1,22 @@
 package com.readonlydev.lib.celestial;
 
 import java.util.ArrayList;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import com.readonlydev.lib.celestial.events.RegisterEvent;
 import com.readonlydev.lib.celestial.events.RegisterEvent.ExoplanetRegisterEvent;
 import com.readonlydev.lib.celestial.objects.ExoStar;
 import com.readonlydev.lib.celestial.objects.ExoStarSystem;
 import com.readonlydev.lib.celestial.objects.Exoplanet;
+import com.readonlydev.lib.exception.CelestialRegistryError;
 
 public class CelestialRegistry {
 
-	private static List<Exoplanet> registeredExoplanets = new ArrayList<>();
-	private static List<ExoStar> registeredStars = new ArrayList<>();
-	private static List<ExoStarSystem> registeredStarSystems = new ArrayList<>();
+	private List<Exoplanet> registeredExoplanets = new ArrayList<>();
+	private List<ExoStar> registeredStars = new ArrayList<>();
+	private List<ExoStarSystem> registeredStarSystems = new ArrayList<>();
 
-	private static Map<ExoStarSystem, List<Exoplanet>> systemsMap = new LinkedHashMap<>();
-
-	private static <T> RegisterEvent<?> registerEventFactory(T celestialObject) {
+	private <T> RegisterEvent<?> registerEventFactory(T celestialObject) {
 		RegisterEvent<?> event;
 		if (celestialObject instanceof Exoplanet) {
 			Exoplanet exoplanet = (Exoplanet) celestialObject;
@@ -36,25 +33,36 @@ public class CelestialRegistry {
 		return event;
 	}
 
-	public static void register(Exoplanet exoplanet) {
-		if (registeredExoplanets.add(exoplanet)) {
-			if (registerEventFactory(exoplanet).call()) {
-				systemsMap.get(exoplanet.getParentSolarSystem()).add(exoplanet);
-			}
+	public boolean register(Exoplanet exoplanet) {
+		boolean result = registerEventFactory(exoplanet).call();
+		if (!registeredExoplanets.add(exoplanet)) {
+			new CelestialRegistryError(exoplanet, "Tried adding an Existing Exoplanet! This is a bug");
 		}
+		if (!result) {
+			new CelestialRegistryError(exoplanet, "An error occured during a ExoplanetRegisterEvent! This is a bug!");
+		}
+		return result;
 	}
 
-	public static void register(ExoStar star) {
-		if (registeredStars.add(star)) {
-			registerEventFactory(star).call();
+	public boolean register(ExoStar star) {
+		boolean result = registerEventFactory(star).call();
+		if (!registeredStars.add(star)) {
+			new CelestialRegistryError(star, "Tried adding an Existing Star! This is a bug");
 		}
+		if (!result) {
+			new CelestialRegistryError(star, "An error occured during a StarRegisterEvent! This is a bug!");
+		}
+		return result;
 	}
 
-	public static void register(ExoStarSystem starSystem) {
-		if (registeredStarSystems.add(starSystem)) {
-			if (registerEventFactory(starSystem).call()) {
-				systemsMap.put(starSystem, new ArrayList<>());
-			}
+	public boolean register(ExoStarSystem starSystem) {
+		boolean result = registerEventFactory(starSystem).call();
+		if (!registeredStarSystems.add(starSystem)) {
+			new CelestialRegistryError(starSystem, "Tried adding an Existing StarSystem! This is a bug");
 		}
+		if (!result) {
+			new CelestialRegistryError(starSystem, "An error occured during a StarSystemRegisterEvent! This is a bug!");
+		}
+		return result;
 	}
 }

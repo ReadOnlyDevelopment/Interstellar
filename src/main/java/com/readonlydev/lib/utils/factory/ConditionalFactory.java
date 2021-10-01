@@ -25,9 +25,11 @@ import com.google.gson.JsonObject;
 import com.readonlydev.lib.asm.ReflectionMethods;
 
 import io.netty.util.internal.StringUtil;
+import lombok.experimental.UtilityClass;
 import net.minecraftforge.common.crafting.IConditionFactory;
 import net.minecraftforge.common.crafting.JsonContext;
 
+@UtilityClass
 public class ConditionalFactory {
 
 	public static class GenericTrueFactory implements IConditionFactory {

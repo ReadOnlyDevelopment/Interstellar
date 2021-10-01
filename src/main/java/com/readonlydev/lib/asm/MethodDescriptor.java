@@ -19,14 +19,14 @@
 
 package com.readonlydev.lib.asm;
 
-import static com.readonlydev.lib.utils.parsing.token.Token.*;
+import static com.readonlydev.lib.system.parsing.token.Token.*;
 
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.mutable.Mutable;
 import org.apache.commons.lang3.mutable.MutableObject;
 
-import com.readonlydev.lib.utils.parsing.Parser;
-import com.readonlydev.lib.utils.parsing.token.Token;
+import com.readonlydev.lib.system.parsing.Parser;
+import com.readonlydev.lib.system.parsing.token.Token;
 
 public class MethodDescriptor {
 	private Class<?>[]	params;

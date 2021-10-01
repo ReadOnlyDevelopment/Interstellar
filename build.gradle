@@ -1,3 +1,7 @@
+import static groovy.io.FileType.FILES;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 buildscript {
 	repositories {
 		mavenCentral()
@@ -18,8 +22,11 @@ plugins {
 	id 'com.github.kt3k.coveralls' version '2.8.2'
 	id 'org.ajoberstar.grgit' version '3.1.1'
 	id 'eclipse'
+	id 'groovy'
 	id 'java'
 }
+
+apply plugin: 'net.minecraftforge.gradle.forge'
 
 import java.util.LinkedHashMap
 
@@ -34,76 +41,53 @@ ext {
 	GC_VERSION = "1.12.2-4.0.2"
 	GC_FULL_VERSION = "${GC_VERSION}.${GC_BUILD}"
 	MANIFESTS = [
-			'Specification-Title':      'Interstellar',
-			'Specification-Vendor':     'ReadOnly Development',
-			'Specification-Version':    SPEC_VERSION,
-			'Implementation-Title':     project.group,
-			'Implementation-Version':   project.version.substring(MC_VERSION.length() + 1),
-			'Implementation-Vendor':    'ReadOnly Development',
-			'Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-			'GitCommit': grgit.head().abbreviatedId,
-			'Git-Branch': grgit.branch.current().getName(),
-			'Built-Against': "${MC_VERSION}-${FORGE_VERSION}",
-			'Using-Mappings': MCP_MAPPINGS,
-			'Built-Against-Galacticraft': GC_FULL_VERSION
-		] as LinkedHashMap
+		'Specification-Title':      'Interstellar',
+		'Specification-Vendor':     'ReadOnly Development',
+		'Specification-Version':    SPEC_VERSION,
+		'Implementation-Title':     project.group,
+		'Implementation-Version':   project.version.substring(MC_VERSION.length() + 1),
+		'Implementation-Vendor':    'ReadOnly Development',
+		'Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+		'GitCommit': grgit.head().abbreviatedId,
+		'Git-Branch': grgit.branch.current().getName(),
+		'Built-Against': "${MC_VERSION}-${FORGE_VERSION}",
+		'Using-Mappings': MCP_MAPPINGS,
+		'Built-Against-Galacticraft': GC_FULL_VERSION
+	] as LinkedHashMap
 }
 
 defaultTasks 'cleanBuild'
-
-apply plugin: 'net.minecraftforge.gradle.forge'
 
 def build_num = getBuildNumber()
 version = "${MC_VERSION}-${mod_version}-build${build_num}"
 group = "${mod_group}"
 archivesBaseName = "${mod_archivesBaseName}"
 
-apply from: 'gradle/forge.gradle'
-apply from: 'gradle/development.gradle'
-apply from: 'gradle/deploy.gradle'
-apply from: 'gradle/license.gradle'
-
 sourceCompatibility = targetCompatibility = '1.8'
 compileJava {
 	sourceCompatibility = targetCompatibility = '1.8'
 }
 
-System.out.println()
-System.out.println('Java Information')
-System.out.println('- Java:   	   ' + System.getProperty('java.version'))
-System.out.println('- JVM:    	   ' + System.getProperty('java.vm.version') + ' (' + System.getProperty('java.vendor') + ')')
-System.out.println('- Arch:  	   ' + System.getProperty('os.arch'))
-System.out.println()
-System.out.println('Minecraft Information')
-System.out.println('- Minecraft:   	   ' + "${MC_VERSION}".toString())
-System.out.println('- Forge:   	   ' + "${forge_version}".toString())
-System.out.println('- Mappings:   	   ' + "${mappings_version}".toString())
-System.out.println()
-System.out.println('Mod Information')
-System.out.println('- ID:   	   ' + "${mod_name}".toString())
-System.out.println('- Name:   	   ' + "${mod_archivesBaseName}".toString())
-System.out.println('- Version:   	   ' + "${version}".toString())
-System.out.println()
-System.out.println()
+def applyScripts() {
+	File srcDir = file('gradle')
+	FileCollection collection = layout.files { srcDir.listFiles() }
 
-repositories {
-	ivy {
-		url "https://micdoodle8.com/new-builds/"
-		layout 'pattern', {
-			artifact "[organization]/${GC_BUILD}/[module]-[revision].jar"
-		}
-		metadataSources {
-			artifact()
-		}
+	FileCollection scripts = collection.filter { File f ->
+		f.name.endsWith('.gradle') || !f.directory
+	}
+	
+	scripts.collect { relativePath(it) }.each { String s ->
+		
+		s = s.replace("\\", "/")
+		def script = "$s"
+		
+		apply from: "$script"
 	}
 }
 
-dependencies {
-	compile "GC-1.12-dev:GalacticraftCore-Dev:${GC_FULL_VERSION}"
-	compile "GC-1.12-dev:Galacticraft-API:${GC_FULL_VERSION}"
-	compile "GC-1.12-dev:Galacticraft-Planets-Dev:${GC_FULL_VERSION}"
-	compile "GC-1.12-dev:MicdoodleCore-Dev:${GC_FULL_VERSION}"
-}
+applyScripts()
+
+printProjectInfo()
 
 String getBuildNumber() {
 	def versionFile = file('version.properties')
@@ -127,26 +111,6 @@ task incrementBuild {
 			versionProps.store(versionFile.newWriter(), null)
 		} else {
 			println("version.properties file not found! Ignoring.")
-		}
-	}
-}
-
-import static groovy.io.FileType.*
-
-task copyToDependentLib {
-	group = 'interstellar-api'
-	description = 'Copies the Dev jar to specified directory'
-	doLast {
-		def devFile = '';
-		def dir = new File("${buildDir}/libs")
-		dir.eachFileRecurse(FILES) {
-			if(it.name.contains('dev')) {
-				devFile = it
-			}
-		}
-		copy {
-			from devFile
-			into "C:/Users/rom/Documents/Interstellar-Exoplanets/lib"
 		}
 	}
 }

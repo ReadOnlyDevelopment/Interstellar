@@ -19,7 +19,6 @@
 
 package com.readonlydev.lib.registry;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +37,6 @@ import org.apache.logging.log4j.Logger;
 import com.readonlydev.api.block.IBlockTileEntity;
 import com.readonlydev.api.block.IModelProvider;
 import com.readonlydev.api.item.IMeshProvider;
-import com.readonlydev.api.registry.IInitProcessor;
 import com.readonlydev.api.repcie.IRecipeProcessor;
 import com.readonlydev.lib.block.BlockSubtype;
 import com.readonlydev.lib.item.ItemBlockSubtype;
@@ -118,8 +116,6 @@ public class InterstellarRegistry {
 
 	private final List<IRecipeProcessor> recipeAdders = NonNullList.create();
 
-	private final List<IInitProcessor> initProcessors = new ArrayList<>();
-
 	private final Map<Class<? extends IForgeRegistryEntry<?>>, Consumer<InterstellarRegistry>> registrationHandlers = new HashMap<>();
 
 	private Object mod;
@@ -153,18 +149,6 @@ public class InterstellarRegistry {
 	}
 
 	/**
-	 * Add a phased initializer, which has preInit, init, and postInit methods which InterstellarRegistry will call automatically.
-	 * <p>
-	 * This method should be called during <em>pre-init</em> in the proper proxy, <em>before</em> calling the InterstellarRegistry's preInit method.
-	 * </p>
-	 *
-	 * @param instance Your initializer (singleton design is recommended)
-	 */
-	public void addPhasedInitializer(IInitProcessor instance) {
-		this.initProcessors.add(instance);
-	}
-
-	/**
 	 * Adds a function that will be called when it is time to register objects for a certain class. For example, adding a handler for class {@link Item} will call the function during
 	 * {@link RegistryEvent.Register} for type {@link Item}.
 	 * <p>
@@ -172,7 +156,8 @@ public class InterstellarRegistry {
 	 * </p>
 	 *
 	 * @param registerFunction The function to call
-	 * @param registryClass    The registry object class
+	 * @param registryClass The registry object class
+	 *
 	 * @throws RuntimeException if a handler for the class is already registered
 	 */
 	public void addRegistrationHandler(Consumer<InterstellarRegistry> registerFunction, Class<? extends IForgeRegistryEntry<?>> registryClass) throws RuntimeException {
@@ -244,10 +229,11 @@ public class InterstellarRegistry {
 	/**
 	 * Create a {@link Fluid} and its {@link IFluidBlock}, or use the existing ones if a fluid has already been registered with the same name.
 	 *
-	 * @param name                 The name of the fluid
-	 * @param hasFlowIcon          Does the fluid have a flow icon?
+	 * @param name The name of the fluid
+	 * @param hasFlowIcon Does the fluid have a flow icon?
 	 * @param fluidPropertyApplier A function that sets the properties of the {@link Fluid}
-	 * @param blockFactory         A function that creates the {@link IFluidBlock}
+	 * @param blockFactory A function that creates the {@link IFluidBlock}
+	 *
 	 * @return The fluid and block
 	 */
 	public <T extends Block & IFluidBlock> Fluid register(Fluid fluid, Function<Fluid, T> blockFactory) {
@@ -459,7 +445,6 @@ public class InterstellarRegistry {
 			return;
 		}
 		verifyOrFindModObject();
-		this.initProcessors.forEach(i -> i.preInit(this, event));
 		this.preInitDone = true;
 	}
 
@@ -484,7 +469,6 @@ public class InterstellarRegistry {
 			logger.warn("init called more than once!");
 			return;
 		}
-		this.initProcessors.forEach(i -> i.init(this, event));
 		this.initDone = true;
 	}
 
@@ -501,7 +485,6 @@ public class InterstellarRegistry {
 			long totalRecipes = ForgeRegistries.RECIPES.getKeys().stream().map(ResourceLocation::getResourceDomain).filter(s -> s.equals(modId)).count();
 			logger.warn("Mod '{}' is still registering recipes with RecipeBuilder ({} recipes, out of {} total)", modId, oldRecipeRegisterCount, totalRecipes);
 		}
-		this.initProcessors.forEach(i -> i.postInit(this, event));
 		this.postInitDone = true;
 	}
 
@@ -509,8 +492,7 @@ public class InterstellarRegistry {
 	 * Call in the "preInit" processor in your client proxy.
 	 */
 	@SideOnly(Side.CLIENT)
-	public void clientPreInit(FMLPreInitializationEvent event) {
-	}
+	public void clientPreInit(FMLPreInitializationEvent event) {}
 
 	/**
 	 * Call in the "init" processor in your client proxy.
@@ -535,8 +517,7 @@ public class InterstellarRegistry {
 	 * @param event
 	 */
 	@SideOnly(Side.CLIENT)
-	public void clientPostInit(FMLPostInitializationEvent event) {
-	}
+	public void clientPostInit(FMLPostInitializationEvent event) {}
 
 	public void registerCommand(ICommand command) {
 		ClientCommandHandler.instance.registerCommand(command);

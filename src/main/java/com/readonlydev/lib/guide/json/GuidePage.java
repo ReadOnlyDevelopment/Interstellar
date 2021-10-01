@@ -29,13 +29,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
+import com.readonlydev.api.json.IJsonSerializer;
 import com.readonlydev.lib.client.gui.element.SElement;
 import com.readonlydev.lib.guide.client.element.GuiGuidePage;
 import com.readonlydev.lib.guide.client.element.Guide;
 import com.readonlydev.lib.guide.json.objects.GuideObject;
 import com.readonlydev.lib.utils.LangUtil;
 import com.readonlydev.lib.utils.factory.ConditionalFactory;
-import com.readonlydev.lib.utils.json.IJsonSerializer;
 
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.common.crafting.IConditionFactory;

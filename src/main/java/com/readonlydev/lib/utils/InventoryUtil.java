@@ -24,9 +24,11 @@ import java.util.Collection;
 import com.google.common.collect.ImmutableList;
 import com.readonlydev.lib.math.MathUtil;
 
+import lombok.experimental.UtilityClass;
 import net.minecraft.inventory.IInventory;
 import net.minecraft.item.ItemStack;
 
+@UtilityClass
 public class InventoryUtil {
 	public static boolean canItemsStack(ItemStack a, ItemStack b) {
 		if (a.isEmpty() || !a.isItemEqual(b) || a.hasTagCompound() != b.hasTagCompound()) {
@@ -40,7 +42,6 @@ public class InventoryUtil {
 		if (inventory == null || stack.isEmpty()) {
 			return stack;
 		}
-
 		for (int i = slotStart; i < slotEndExclusive && !stack.isEmpty(); ++i) {
 			ItemStack inSlot = inventory.getStackInSlot(i);
 			if (canItemsStack(inSlot, stack)) {
@@ -50,7 +51,6 @@ public class InventoryUtil {
 				inventory.setInventorySlotContents(i, inSlot);
 			}
 		}
-
 		for (int i = slotStart; i < slotEndExclusive && !stack.isEmpty(); ++i) {
 			if (inventory.getStackInSlot(i).isEmpty()) {
 				int amountCanFit = MathUtil.min(stack.getCount(), inventory.getInventoryStackLimit());
@@ -60,7 +60,6 @@ public class InventoryUtil {
 				inventory.setInventorySlotContents(i, toInsert);
 			}
 		}
-
 		return stack;
 	}
 
@@ -68,9 +67,7 @@ public class InventoryUtil {
 		if (inventory == null && stacks.isEmpty()) {
 			return ImmutableList.of();
 		}
-
 		ImmutableList.Builder<ItemStack> leftovers = ImmutableList.builder();
-
 		for (ItemStack stack : stacks) {
 			stack = mergeItem(inventory, slotStart, slotEndExclusive, stack);
 
@@ -79,7 +76,6 @@ public class InventoryUtil {
 				leftovers.add(stack);
 			}
 		}
-
 		return leftovers.build();
 	}
 }

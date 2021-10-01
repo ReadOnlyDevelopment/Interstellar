@@ -21,7 +21,7 @@ package com.readonlydev.lib.celestial.enums;
 
 import com.readonlydev.lib.celestial.data.Temperature;
 import com.readonlydev.lib.celestial.objects.Exoplanet;
-import com.readonlydev.lib.utils.data.ImmutableDataPair;
+import com.readonlydev.lib.system.data.ImmutableDataPair;
 
 /**
  * Thermal Planetary Habitability Classification<br>

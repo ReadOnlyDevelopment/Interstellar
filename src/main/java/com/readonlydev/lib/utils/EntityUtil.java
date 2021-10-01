@@ -29,7 +29,9 @@ import org.apache.commons.lang3.ArrayUtils;
 import com.google.common.collect.Lists;
 import com.readonlydev.lib.Interstellar;
 import com.readonlydev.lib.asm.ASMUtil;
+import com.readonlydev.lib.client.Point;
 
+import lombok.experimental.UtilityClass;
 import net.minecraft.block.Block;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.client.Minecraft;
@@ -55,6 +57,7 @@ import net.minecraft.world.chunk.Chunk;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+@UtilityClass
 public class EntityUtil {
 	private static EnumFacing[] facings = new EnumFacing[] { EnumFacing.NORTH, EnumFacing.EAST, EnumFacing.SOUTH,
 			EnumFacing.WEST, EnumFacing.UP, EnumFacing.DOWN };
@@ -67,21 +70,19 @@ public class EntityUtil {
 		} catch (ClassNotFoundException e) {
 			Interstellar.log.error("Failed to get PlayerChunkMap class.", e);
 		}
-
 	}
 
 	/**
 	 * Eject a new item corresponding to the {@link ItemStack}.
 	 *
-	 * @param world     the world
-	 * @param pos       the pos
+	 * @param world the world
+	 * @param pos the pos
 	 * @param itemStack the item stack
 	 */
 	public static void spawnEjectedItem(World world, BlockPos pos, ItemStack itemStack) {
 		if (itemStack == null || world.isRemote) {
 			return;
 		}
-
 		float rx = world.rand.nextFloat() * 0.8F + 0.1F;
 		float ry = world.rand.nextFloat() * 0.8F + 0.1F;
 		float rz = world.rand.nextFloat() * 0.8F + 0.1F;
@@ -93,13 +94,13 @@ public class EntityUtil {
 		entityItem.motionY = world.rand.nextGaussian() * factor + 0.2F;
 		entityItem.motionZ = world.rand.nextGaussian() * factor;
 		world.spawnEntity(entityItem);
-
 	}
 
 	/**
 	 * Finds a player by its UUID. FIXME
 	 *
 	 * @param uuid the uuid
+	 *
 	 * @return the player
 	 */
 	public static EntityPlayerMP findPlayerFromUUID(UUID uuid) {
@@ -116,6 +117,7 @@ public class EntityUtil {
 	 * Gets the {@link EnumFacing} the {@link Entity} is currently facing.
 	 *
 	 * @param entity the entity
+	 *
 	 * @return the direction
 	 */
 	public static EnumFacing getEntityFacing(Entity entity) {
@@ -128,8 +130,9 @@ public class EntityUtil {
 	 * {@link EnumFacing#UP UP} or {@link EnumFacing#DOWN DOWN} if the entity is
 	 * looking up or down.
 	 *
-	 * @param entity  the entity
+	 * @param entity the entity
 	 * @param sixWays whether to consider UP and DOWN for directions
+	 *
 	 * @return the direction
 	 */
 	public static EnumFacing getEntityFacing(Entity entity, boolean sixWays) {
@@ -140,6 +143,7 @@ public class EntityUtil {
 	 * Gets the entity rotation based on where it's currently facing.
 	 *
 	 * @param entity the entity
+	 *
 	 * @return the entity rotation
 	 */
 	public static int getEntityRotation(Entity entity) {
@@ -149,15 +153,15 @@ public class EntityUtil {
 	/**
 	 * Gets the entity rotation based on where it's currently facing.
 	 *
-	 * @param entity  the entity
+	 * @param entity the entity
 	 * @param sixWays the six ways
+	 *
 	 * @return the entity rotation
 	 */
 	public static int getEntityRotation(Entity entity, boolean sixWays) {
 		if (entity == null) {
 			return 6;
 		}
-
 		float pitch = entity.rotationPitch;
 		if (sixWays && pitch < -45) {
 			return 4;
@@ -165,7 +169,6 @@ public class EntityUtil {
 		if (sixWays && pitch > 45) {
 			return 5;
 		}
-
 		return (MathHelper.floor(entity.rotationYaw * 4.0F / 360.0F + 0.5D) + 2) & 3;
 	}
 
@@ -173,7 +176,8 @@ public class EntityUtil {
 	 * Checks if is the {@link Item} is equipped for the player.
 	 *
 	 * @param player the player
-	 * @param item   the item
+	 * @param item the item
+	 *
 	 * @return true, if is equipped
 	 */
 	public static boolean isEquipped(EntityPlayer player, Item item, EnumHand hand) {
@@ -184,8 +188,9 @@ public class EntityUtil {
 	 * Checks if is the {@link Item} contained in the {@link ItemStack} is equipped
 	 * for the player.
 	 *
-	 * @param player    the player
+	 * @param player the player
 	 * @param itemStack the item stack
+	 *
 	 * @return true, if is equipped
 	 */
 	public static boolean isEquipped(EntityPlayer player, ItemStack itemStack, EnumHand hand) {
@@ -196,6 +201,7 @@ public class EntityUtil {
 	 * Gets the list of players currently watching the {@link Chunk}.
 	 *
 	 * @param chunk the chunk
+	 *
 	 * @return the players watching chunk
 	 */
 	public static List<EntityPlayerMP> getPlayersWatchingChunk(Chunk chunk) {
@@ -206,8 +212,9 @@ public class EntityUtil {
 	 * Gets the list of players currently watching the chunk at the coordinate.
 	 *
 	 * @param world the world
-	 * @param x     the x
-	 * @param z     the z
+	 * @param x the x
+	 * @param z the z
+	 *
 	 * @return the players watching chunk
 	 */
 	@SuppressWarnings("unchecked")
@@ -215,7 +222,6 @@ public class EntityUtil {
 		if (playersWatchingChunk == null) {
 			return new ArrayList<>();
 		}
-
 		try {
 			PlayerChunkMapEntry entry = world.getPlayerChunkMap().getEntry(x, z);
 			if (entry == null) {
@@ -232,6 +238,7 @@ public class EntityUtil {
 	 * Gets the render view offset for the current view entity.
 	 *
 	 * @param partialTick the partial tick
+	 *
 	 * @return the render view offset
 	 */
 	public static Point getRenderViewOffset(float partialTick) {
@@ -239,7 +246,6 @@ public class EntityUtil {
 		if (partialTick == 0) {
 			return new Point(entity.posX, entity.posY, entity.posZ);
 		}
-
 		double x = entity.lastTickPosX + (entity.posX - entity.lastTickPosX) * partialTick;
 		double y = entity.lastTickPosY + (entity.posY - entity.lastTickPosY) * partialTick;
 		double z = entity.lastTickPosZ + (entity.posZ - entity.lastTickPosZ) * partialTick;
@@ -250,21 +256,18 @@ public class EntityUtil {
 	 * Adds the destroy effects into the world for the specified
 	 * {@link IBlockState}.
 	 *
-	 * @param world           the world
-	 * @param pos             the pos
+	 * @param world the world
+	 * @param pos the pos
 	 * @param particleManager the effect renderer
-	 * @param states          the states
+	 * @param states the states
 	 */
 	@SideOnly(Side.CLIENT)
-	public static void addDestroyEffects(World world, BlockPos pos, ParticleManager particleManager,
-			IBlockState... states) {
+	public static void addDestroyEffects(World world, BlockPos pos, ParticleManager particleManager, IBlockState... states) {
 		if (ArrayUtils.isEmpty(states)) {
 			states = new IBlockState[] { world.getBlockState(pos) };
 		}
-
 		byte nb = 4;
 		ParticleDigging.Factory factory = new ParticleDigging.Factory();
-
 		for (int i = 0; i < nb; ++i) {
 			for (int j = 0; j < nb; ++j) {
 				for (int k = 0; k < nb; ++k) {
@@ -285,24 +288,21 @@ public class EntityUtil {
 	/**
 	 * Adds the hit effects into the world for the specified {@link IBlockState}.
 	 *
-	 * @param world           the world
-	 * @param target          the target
+	 * @param world the world
+	 * @param target the target
 	 * @param particleManager the effect renderer
-	 * @param states          the states
+	 * @param states the states
 	 */
 	@SideOnly(Side.CLIENT)
-	public static void addHitEffects(World world, RayTraceResult target, ParticleManager particleManager,
-			IBlockState... states) {
+	public static void addHitEffects(World world, RayTraceResult target, ParticleManager particleManager, IBlockState... states) {
 		BlockPos pos = target.getBlockPos();
 		if (ArrayUtils.isEmpty(states)) {
 			states = new IBlockState[] { world.getBlockState(pos) };
 		}
-
 		IBlockState baseState = world.getBlockState(pos);
 		if (baseState.getRenderType() != EnumBlockRenderType.INVISIBLE) {
 			return;
 		}
-
 		double fxX = pos.getX() + world.rand.nextDouble();
 		double fxY = pos.getY() + world.rand.nextDouble();
 		double fxZ = pos.getZ() + world.rand.nextDouble();
@@ -330,7 +330,6 @@ public class EntityUtil {
 		default:
 			break;
 		}
-
 		int id = Block.getStateId(states[world.rand.nextInt(states.length)]);
 
 		ParticleDigging.Factory factory = new ParticleDigging.Factory();

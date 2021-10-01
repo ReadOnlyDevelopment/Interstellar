@@ -29,6 +29,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
+import com.readonlydev.api.json.IJsonSerializer;
 import com.readonlydev.lib.client.gui.SGuiResources;
 import com.readonlydev.lib.client.gui.element.container.SElementContainerBase;
 import com.readonlydev.lib.client.gui.element.container.list.SContListH;
@@ -36,7 +37,6 @@ import com.readonlydev.lib.client.gui.element.sizablebox.SElementGuiSizableBox;
 import com.readonlydev.lib.guide.json.GuideHandler;
 import com.readonlydev.lib.utils.ColorUtil;
 import com.readonlydev.lib.utils.factory.ConditionalFactory;
-import com.readonlydev.lib.utils.json.IJsonSerializer;
 
 import net.minecraftforge.common.crafting.IConditionFactory;
 

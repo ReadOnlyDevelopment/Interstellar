@@ -19,10 +19,14 @@
 
 package com.readonlydev.lib.utils;
 
-import static com.readonlydev.lib.utils.ColorUtil.Color.*;
+import static com.readonlydev.lib.utils.ColorUtil.Color.AQUA;
+import static com.readonlydev.lib.utils.ColorUtil.Color.WHITE;
 
 import com.readonlydev.lib.utils.ColorUtil.ITextFormat;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public class TextUtil {
 
 	public static final String SHIFTFORINFO = colorTextTranslate(AQUA, "info.shift") + " " + colorTextTranslate(WHITE, "info.forinfo");

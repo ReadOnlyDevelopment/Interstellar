@@ -10,6 +10,10 @@ public class Vec {
 		return new Vec(x, y, z);
 	}
 
+	public static Vec fromFloatArray(float[] floatArray) {
+		return new Vec(floatArray[0], floatArray[1], floatArray[2]);
+	}
+
 	private Vec(double x, double y, double z) {
 		super();
 		this.x = x;

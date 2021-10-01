@@ -24,14 +24,15 @@ import java.util.Locale;
 
 import com.google.common.collect.Lists;
 import com.readonlydev.api.celestial.ICelestialObject;
-import com.readonlydev.lib.celestial.Physics;
+import com.readonlydev.api.celestial.IPropertySerializeable;
 import com.readonlydev.lib.celestial.data.Mass;
 import com.readonlydev.lib.celestial.data.Radius;
 import com.readonlydev.lib.celestial.data.Temperature;
 import com.readonlydev.lib.celestial.data.UnitType;
 import com.readonlydev.lib.celestial.enums.HabitabilityClassification;
 import com.readonlydev.lib.celestial.enums.PlanetType;
-import com.readonlydev.lib.utils.factory.CelestialFactory;
+import com.readonlydev.lib.celestial.misc.CelestialFactory;
+import com.readonlydev.lib.celestial.misc.Physics;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -40,7 +41,6 @@ import micdoodle8.mods.galacticraft.api.galaxies.SolarSystem;
 import micdoodle8.mods.galacticraft.api.world.AtmosphereInfo;
 import micdoodle8.mods.galacticraft.api.world.EnumAtmosphericGas;
 import net.minecraft.util.ResourceLocation;
-import net.minecraft.world.WorldProvider;
 import net.minecraft.world.biome.Biome;
 
 @Data
@@ -59,19 +59,22 @@ public class Exoplanet extends Planet implements ICelestialObject {
 	private Exoplanet buildExoplanet(Exoplanet.Builder builder) {
 		this.setParentSolarSystem(builder.parentSolarSystem);
 		this.setRelativeSize(builder.relativeSize);
-		this.setRelativeDistanceFromCenter(builder.distance);
+		this.setRelativeDistanceFromCenter(builder.properties.getDistanceFromStar());
 		this.setRelativeOrbitTime(builder.relativeOrbitTime);
 		this.setPhaseShift(builder.phaseShift);
 		this.setTierRequired(builder.tierRequired);
 		this.setBodyIcon(builder.icon);
 		this.setAtmosphere(builder.getAtmosphereInfo());
 		builder.gasses.forEach(e -> this.atmosphereComponent(e));
-		this.setDimensionInfo(builder.dimensionID, builder.providerClass);
+		this.setDimensionInfo(builder.dimensionID, builder.properties.getWorldProvider());
 		this.setBiomeInfo(builder.biomes);
-		this.mass = builder.mass;
-		this.radius = builder.radius;
+		this.mass = builder.properties.getMass();
+		this.radius = builder.properties.getRadius();
 		this.temperature = builder.temperature;
 		this.daylength = builder.daylength;
+		if (!builder.isEnabled) {
+			this.setUnreachable();
+		}
 		return this;
 	}
 
@@ -132,11 +135,9 @@ public class Exoplanet extends Planet implements ICelestialObject {
 	public static final class Builder extends CelestialFactory<Exoplanet> {
 
 		private float relativeSize;
-		private ScalableDistance distance;
 		private float relativeOrbitTime;
 		private float phaseShift;
 		private int dimensionID;
-		private Class<? extends WorldProvider> providerClass;
 		private long daylength = 24000L;
 		private int tierRequired = -1;
 		private boolean enableRain = false;
@@ -148,9 +149,9 @@ public class Exoplanet extends Planet implements ICelestialObject {
 		private ResourceLocation icon;
 		private ExoStarSystem parentSolarSystem;
 		private List<EnumAtmosphericGas> gasses;
-		private Mass mass;
-		private Radius radius;
 		private Temperature temperature;
+		private IPropertySerializeable properties;
+		private boolean isEnabled;
 
 		private final Exoplanet exoplanet;
 
@@ -163,23 +164,13 @@ public class Exoplanet extends Planet implements ICelestialObject {
 			return this;
 		}
 
-		public Builder mass(double mass) {
-			this.mass = new Mass(mass, UnitType.EARTH);
-			return this;
-		}
-
-		public Builder radius(double radius) {
-			this.radius = new Radius(radius, UnitType.EARTH);
+		public Builder properties(IPropertySerializeable properties) {
+			this.properties = properties;
 			return this;
 		}
 
 		public Builder size(float relativeSize) {
 			this.relativeSize = relativeSize;
-			return this;
-		}
-
-		public Builder distanceFromStar(double distance) {
-			this.distance = new ScalableDistance((float) distance, (float) distance);
 			return this;
 		}
 
@@ -195,11 +186,6 @@ public class Exoplanet extends Planet implements ICelestialObject {
 
 		public Builder dimensionId(int dimensionID) {
 			this.dimensionID = dimensionID;
-			return this;
-		}
-
-		public Builder worldProvider(Class<? extends WorldProvider> providerClass) {
-			this.providerClass = providerClass;
 			return this;
 		}
 
@@ -254,6 +240,11 @@ public class Exoplanet extends Planet implements ICelestialObject {
 
 		public Builder atmosphereGasses(EnumAtmosphericGas... gasses) {
 			this.gasses = Lists.newArrayList(gasses);
+			return this;
+		}
+
+		public Builder set(boolean toggle) {
+			this.isEnabled = toggle;
 			return this;
 		}
 

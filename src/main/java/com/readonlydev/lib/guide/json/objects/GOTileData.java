@@ -26,13 +26,13 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.JsonSerializationContext;
+import com.readonlydev.api.json.IJsonSerializer;
 import com.readonlydev.lib.client.gui.element.container.SElementContainerBase;
 import com.readonlydev.lib.guide.client.element.TileDataElement;
 import com.readonlydev.lib.guide.registry.ModSection;
 import com.readonlydev.lib.guide.registry.ModSectionRegistry;
 import com.readonlydev.lib.guide.registry.TileData;
 import com.readonlydev.lib.guide.registry.TileDataProvider;
-import com.readonlydev.lib.utils.json.IJsonSerializer;
 
 import net.minecraft.util.StringUtils;
 import net.minecraft.util.text.TextFormatting;

@@ -2,8 +2,8 @@ package com.readonlydev.lib.celestial.data;
 
 import static com.readonlydev.lib.celestial.data.UnitType.ABSOLUTE;
 
-import com.readonlydev.lib.celestial.Physics;
-import com.readonlydev.lib.celestial.SpaceCalculations;
+import com.readonlydev.lib.celestial.misc.Physics;
+import com.readonlydev.lib.celestial.misc.SpaceCalculations;
 
 public class Radius extends Unit {
 

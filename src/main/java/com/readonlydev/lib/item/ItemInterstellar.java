@@ -24,9 +24,9 @@ import java.util.List;
 import javax.annotation.Nullable;
 
 import com.readonlydev.api.block.IModelProvider;
+import com.readonlydev.lib.system.Keys;
+import com.readonlydev.lib.system.Keys.Key;
 import com.readonlydev.lib.utils.TextUtil;
-import com.readonlydev.lib.utils.system.Keys;
-import com.readonlydev.lib.utils.system.Keys.Key;
 
 import net.minecraft.client.renderer.block.model.ModelResourceLocation;
 import net.minecraft.client.util.ITooltipFlag;

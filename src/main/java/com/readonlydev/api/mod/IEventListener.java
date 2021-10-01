@@ -24,30 +24,10 @@
 
 package com.readonlydev.api.mod;
 
-import net.minecraftforge.fml.common.event.FMLInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
+import com.readonlydev.api.mod.phase.Step;
 
 public interface IEventListener {
 
-	public void on(EventStep eventStep);
-
-	public static enum EventStep {
-
-		/**
-		 * {@link FMLPreInitializationEvent}
-		 */
-		PREINIT,
-
-		/**
-		 * {@link FMLInitializationEvent}
-		 */
-		INIT,
-
-		/**
-		 * {@link FMLPostInitializationEvent}.
-		 */
-		POSTINIT
-	}
+	public void on(Step step);
 
 }

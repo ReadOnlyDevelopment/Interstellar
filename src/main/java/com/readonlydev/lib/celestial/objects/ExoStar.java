@@ -3,13 +3,13 @@ package com.readonlydev.lib.celestial.objects;
 import java.util.Locale;
 
 import com.readonlydev.api.celestial.ICelestialObject;
-import com.readonlydev.lib.celestial.HabitableZone;
-import com.readonlydev.lib.celestial.Physics;
 import com.readonlydev.lib.celestial.data.Mass;
 import com.readonlydev.lib.celestial.data.Radius;
 import com.readonlydev.lib.celestial.data.Temperature;
 import com.readonlydev.lib.celestial.data.UnitType;
-import com.readonlydev.lib.utils.factory.CelestialFactory;
+import com.readonlydev.lib.celestial.misc.CelestialFactory;
+import com.readonlydev.lib.celestial.misc.HabitableZone;
+import com.readonlydev.lib.celestial.misc.Physics;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;

@@ -21,32 +21,34 @@ package com.readonlydev.lib.utils;
 
 import com.readonlydev.lib.block.element.DirectionlElement;
 
+import lombok.experimental.UtilityClass;
 import net.minecraft.block.state.IBlockState;
 import net.minecraft.util.EnumFacing;
 import net.minecraft.util.EnumFacing.Axis;
 
+@UtilityClass
 public class FacingUtil {
 	/**
 	 * Gets the rotation count for the facing.
 	 *
 	 * @param facing the facing
+	 *
 	 * @return the rotation count
 	 */
 	public static int getRotationCount(EnumFacing facing) {
 		if (facing == null) {
 			return 0;
 		}
-
 		switch (facing) {
-			case EAST:
-				return 1;
-			case NORTH:
-				return 2;
-			case WEST:
-				return 3;
-			case SOUTH:
-			default:
-				return 0;
+		case EAST:
+			return 1;
+		case NORTH:
+			return 2;
+		case WEST:
+			return 3;
+		case SOUTH:
+		default:
+			return 0;
 		}
 	}
 
@@ -54,6 +56,7 @@ public class FacingUtil {
 	 * Gets the rotation count for the {@link IBlockState}
 	 *
 	 * @param state the state
+	 *
 	 * @return the rotation count
 	 */
 	public static int getRotationCount(IBlockState state) {
@@ -65,14 +68,14 @@ public class FacingUtil {
 	 * Rotates facing {@code count} times.
 	 *
 	 * @param facing the facing
-	 * @param count  the count
+	 * @param count the count
+	 *
 	 * @return the enum facing
 	 */
 	public static EnumFacing rotateFacing(EnumFacing facing, int count) {
 		if (facing == null) {
 			return null;
 		}
-
 		while (count-- > 0) {
 			facing = facing.rotateAround(EnumFacing.Axis.Y);
 		}
@@ -83,36 +86,34 @@ public class FacingUtil {
 	 * Gets the real side of a rotated block.
 	 *
 	 * @param state the state
-	 * @param side  the side
+	 * @param side the side
+	 *
 	 * @return the real side
 	 */
 	public static EnumFacing getRealSide(IBlockState state, EnumFacing side) {
 		if (state == null || side == null) {
 			return side;
 		}
-
 		EnumFacing direction = DirectionlElement.getDirection(state);
 		if (direction == EnumFacing.SOUTH) {
 			return side;
 		}
-
 		if (direction == EnumFacing.DOWN) {
 			return side.rotateAround(Axis.X);
 		} else if (direction == EnumFacing.UP) {
 			switch (side) {
-				case UP:
-					return EnumFacing.SOUTH;
-				case DOWN:
-					return EnumFacing.NORTH;
-				case NORTH:
-					return EnumFacing.UP;
-				case SOUTH:
-					return EnumFacing.DOWN;
-				default:
-					return side;
+			case UP:
+				return EnumFacing.SOUTH;
+			case DOWN:
+				return EnumFacing.NORTH;
+			case NORTH:
+				return EnumFacing.UP;
+			case SOUTH:
+				return EnumFacing.DOWN;
+			default:
+				return side;
 			}
 		}
-
 		int count = FacingUtil.getRotationCount(direction);
 		side = FacingUtil.rotateFacing(side, count);
 

@@ -64,8 +64,7 @@ public interface IProxy {
 	World getClientWorld();
 
 	/**
-	 * Get the {@link IThreadListener} for the {@link MessageContext}'s
-	 * {@link Side}.
+	 * Get the {@link IThreadListener} for the {@link MessageContext}'s {@link Side}.
 	 *
 	 * @param context The message context
 	 * @return The thread listener
@@ -84,6 +83,8 @@ public interface IProxy {
 	 * Thrown when a proxy method is called from the wrong side.
 	 */
 	class WrongSideException extends RuntimeException {
+		private static final long serialVersionUID = 1838010897305197530L;
+
 		public WrongSideException(final String message) {
 			super(message);
 		}

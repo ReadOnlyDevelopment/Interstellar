@@ -19,17 +19,22 @@
 
 package com.readonlydev.lib.utils;
 
+import com.readonlydev.lib.client.Point;
+
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
+import lombok.experimental.UtilityClass;
 import net.minecraft.util.math.AxisAlignedBB;
 import net.minecraft.util.math.BlockPos;
 
+@UtilityClass
 public class PosUtil {
 	/**
 	 * Rotates the {@link BlockPos} around the Y axis around the origin (0,0,0).
 	 *
-	 * @param pos      the pos
+	 * @param pos the pos
 	 * @param rotation the rotation
+	 *
 	 * @return the block pos
 	 */
 	public static BlockPos rotate(BlockPos pos, int rotation) {
@@ -48,6 +53,7 @@ public class PosUtil {
 	 * Converts the {@link BlockPos} to its position relative to the chunk it's in.
 	 *
 	 * @param pos the pos
+	 *
 	 * @return the block pos
 	 */
 	public static BlockPos chunkPosition(BlockPos pos) {
@@ -58,6 +64,7 @@ public class PosUtil {
 	 * Gets an iterable iterating through all the {@link BlockPos} intersecting the passed {@link AxisAlignedBB}.
 	 *
 	 * @param aabb the aabb
+	 *
 	 * @return the all in box
 	 */
 	public static Iterable<BlockPos> getAllInBox(AxisAlignedBB aabb) {
@@ -79,6 +86,7 @@ public class PosUtil {
 	 *
 	 * @param pos1 the pos 1
 	 * @param pos2 the pos 2
+	 *
 	 * @return the int
 	 */
 	public static int compare(BlockPos pos1, BlockPos pos2) {
@@ -89,15 +97,15 @@ public class PosUtil {
 	 * Compares the distance of the passed {@link BlockPos} to the <i>offset</i> {@link Point}.
 	 *
 	 * @param offset the offset
-	 * @param pos1   the pos 1
-	 * @param pos2   the pos 2
+	 * @param pos1 the pos 1
+	 * @param pos2 the pos 2
+	 *
 	 * @return the int
 	 */
 	public static int compare(Point offset, BlockPos pos1, BlockPos pos2) {
 		if (pos1.equals(pos2)) {
 			return 0;
 		}
-
 		return Double.compare(pos1.distanceSq(offset.x, offset.y, offset.z), pos2.distanceSq(offset.x, offset.y, offset.z));
 	}
 }

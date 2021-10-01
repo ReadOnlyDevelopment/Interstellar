@@ -34,7 +34,7 @@ public final class BiomeMap implements IntegerLIMap<BiomeExoplanet, IBiomeExopla
 	/* BiomeMap exclusive */
 
 	public void addBiomes(IBiomeExoplanet... rbiomes) {
-		Arrays.stream(rbiomes).forEach(biome -> put(biome.getBiome(), biome));
+		Arrays.stream(rbiomes).forEach(biome -> put(biome.get(), biome));
 	}
 
 	/* LimitedIndexedMap Overrides */

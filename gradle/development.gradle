@@ -18,6 +18,18 @@ jar {
 	manifest(setMainManifestProps)
 }
 
+javadoc {
+	
+	destinationDir = file("$buildDir/docs/")
+	source = sourceSets.main.allJava
+	classpath += configurations.forgeGradleMc
+	classpath += configurations.compileClasspath
+	options.docTitle = project.archivesBaseName
+	options.encoding = 'UTF-8'
+	options.memberLevel = JavadocMemberLevel.PROTECTED
+	options.tags 'educationalLinks:a:Educational Links:'
+}
+
 task signJar(type: SignJar, dependsOn: reobfJar) {
 	onlyIf {
 		project.hasProperty('keyStore')

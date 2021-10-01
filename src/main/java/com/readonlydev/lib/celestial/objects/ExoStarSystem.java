@@ -4,16 +4,18 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import com.google.common.collect.Lists;
 import com.readonlydev.api.celestial.ICelestialObject;
 import com.readonlydev.lib.celestial.data.Mass;
 import com.readonlydev.lib.celestial.data.Radius;
 import com.readonlydev.lib.celestial.data.Temperature;
-import com.readonlydev.lib.utils.factory.CelestialFactory;
+import com.readonlydev.lib.celestial.misc.CelestialFactory;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import micdoodle8.mods.galacticraft.api.galaxies.SolarSystem;
 import micdoodle8.mods.galacticraft.api.vector.Vector3;
+import net.minecraft.util.ResourceLocation;
 
 @Data
 @EqualsAndHashCode(callSuper = false)
@@ -38,10 +40,6 @@ public class ExoStarSystem extends SolarSystem implements ICelestialObject {
 		return super.getName().toUpperCase(Locale.ENGLISH);
 	}
 
-	public List<Exoplanet> getPlanetsList() {
-		return planetList;
-	}
-
 	public Exoplanet[] getPlanets() {
 		return planetList.toArray(new Exoplanet[planetList.size()]);
 	}
@@ -49,6 +47,14 @@ public class ExoStarSystem extends SolarSystem implements ICelestialObject {
 	@Override
 	public ExoStar getMainStar() {
 		return mainStar;
+	}
+
+	public ResourceLocation[] getPlanetListIcons() {
+		List<ResourceLocation> iconList = Lists.newArrayList();
+		for (Exoplanet exoplanet : this.getPlanetList()) {
+			iconList.add(exoplanet.getBodyIcon());
+		}
+		return iconList.toArray(new ResourceLocation[getPlanetList().size()]);
 	}
 
 	public static ExoStarSystem.Builder factory(String name) {

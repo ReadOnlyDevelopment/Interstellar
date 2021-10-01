@@ -1,10 +1,13 @@
 package com.readonlydev.lib.math;
 
-import com.readonlydev.lib.annotation.InsteadUse;
+import com.readonlydev.lib.annotation.ReplaceWith;
 import com.readonlydev.lib.celestial.data.Temperature;
 
+/**
+ * @deprecated Use {@link Temperature#Temperature(double value, Temperature.Unit unit)} instead
+ */
 @Deprecated
-@InsteadUse(Temperature.class)
+@ReplaceWith("new Temperature()")
 public class TempConversion {
 
 	//// Fahrenheit -> Celcius ////

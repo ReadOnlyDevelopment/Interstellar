@@ -1,10 +1,23 @@
 repositories {
 	mavenCentral()
-	removeIf { it.url.host == 'files.minecraftforge.net' }
-	maven { url "https://maven.minecraftforge.net/" }
+	ivy {
+		url "https://micdoodle8.com/new-builds/"
+		layout 'pattern', {
+			artifact "[organization]/${GC_BUILD}/[module]-[revision].jar"
+		}
+		metadataSources {
+			artifact()
+		}
+	}
 }
 
 dependencies {
+
+	compile "GC-1.12-dev:GalacticraftCore-Dev:${GC_FULL_VERSION}"
+	compile "GC-1.12-dev:Galacticraft-API:${GC_FULL_VERSION}"
+	compile "GC-1.12-dev:Galacticraft-Planets-Dev:${GC_FULL_VERSION}"
+	compile "GC-1.12-dev:MicdoodleCore-Dev:${GC_FULL_VERSION}"
+	
 	compileOnly 'org.projectlombok:lombok:1.18.20'
 	annotationProcessor 'org.projectlombok:lombok:1.18.20'
 	

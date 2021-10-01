@@ -1,4 +1,3 @@
-
 license {
 	ignoreFailures = true
 	ext.year = Calendar.getInstance().get(Calendar.YEAR)

@@ -1,0 +1,24 @@
+def printProjectInfo() {
+	
+	System.out.println()
+	System.out.println('Java Information')
+	System.out.println('- Java:   	   ' + System.getProperty('java.version'))
+	System.out.println('- JVM:    	   ' + System.getProperty('java.vm.version') + ' (' + System.getProperty('java.vendor') + ')')
+	System.out.println('- Arch:  	   ' + System.getProperty('os.arch'))
+	System.out.println()
+	System.out.println('Minecraft Information')
+	System.out.println('- Minecraft:   	   ' + "${project.MC_VERSION}".toString())
+	System.out.println('- Forge:   	   ' + "${project.forge_version}".toString())
+	System.out.println('- Mappings:   	   ' + "${project.mappings_version}".toString())
+	System.out.println()
+	System.out.println('Mod Information')
+	System.out.println('- ID:   	   ' + "${project.mod_name}".toString())
+	System.out.println('- Name:   	   ' + "${project.mod_archivesBaseName}".toString())
+	System.out.println('- Version:   	   ' + "${project.version}".toString())
+	System.out.println()
+	System.out.println()
+}
+
+ext {
+	printProjectInfo = this.&printProjectInfo
+}

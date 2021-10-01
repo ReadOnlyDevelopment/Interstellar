@@ -33,9 +33,14 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.readonlydev.api.mod.IEventListener;
 import com.readonlydev.api.mod.IIDProvider;
+import com.readonlydev.api.mod.phase.IInitPhase;
+import com.readonlydev.api.mod.phase.IPostInitPhase;
+import com.readonlydev.api.mod.phase.IPreInitPhase;
+import com.readonlydev.api.mod.phase.Step;
 import com.readonlydev.api.proxy.IProxy;
 import com.readonlydev.lib.base.config.ReadOnlyConfig;
-import com.readonlydev.lib.celestial.CelestialAsset;
+import com.readonlydev.lib.base.phase.PhaseSets;
+import com.readonlydev.lib.celestial.misc.CelestialAsset;
 import com.readonlydev.lib.registry.IEntryClass;
 import com.readonlydev.lib.registry.InterstellarRegistry;
 import com.readonlydev.lib.version.Version;
@@ -58,7 +63,11 @@ public abstract class InterstellarMod implements IIDProvider {
 	private final String modId, modName;
 	private final Version version;
 	private final Logger logger;
+
 	private final Set<IEventListener> eventListeners = new HashSet<>();
+
+	private final PhaseSets phaseSets = new PhaseSets();
+
 	private final Set<ReadOnlyConfig> configFiles = new HashSet<>();
 	private final Map<KeyReference<?>, Object> keyReference = new HashMap<>();
 	private final CelestialAsset celestialAssetClass;
@@ -88,9 +97,9 @@ public abstract class InterstellarMod implements IIDProvider {
 	/**
 	 * Save a mod value.
 	 *
-	 * @param key   The key.
+	 * @param key The key.
 	 * @param value The value.
-	 * @param <T>   The value type.
+	 * @param <T> The value type.
 	 */
 	public <T> void putKeyReference(KeyReference<T> key, T value) {
 		keyReference.put(key, value);
@@ -101,6 +110,18 @@ public abstract class InterstellarMod implements IIDProvider {
 			throw new IllegalArgumentException("Could not find " + key + " as generic reference item.");
 		}
 		return key.getType().cast(keyReference.get(key));
+	}
+
+	public <T> void addPhaseListener(T listener) {
+		if (listener instanceof IPreInitPhase) {
+			phaseSets.addPreInitListener((IPreInitPhase) listener);
+		}
+		if (listener instanceof IInitPhase) {
+			phaseSets.addInitListener((IInitPhase) listener);
+		}
+		if (listener instanceof IPostInitPhase) {
+			phaseSets.addPostInitListener((IPostInitPhase) listener);
+		}
 	}
 
 	/**
@@ -132,7 +153,7 @@ public abstract class InterstellarMod implements IIDProvider {
 	 *
 	 * @param step The step of initialization.
 	 */
-	protected void callEventStepListeners(IEventListener.EventStep step) {
+	protected void callEventStepListeners(Step step) {
 		for (IEventListener listener : getSafeEventListeners()) {
 			listener.on(step);
 		}
@@ -150,7 +171,7 @@ public abstract class InterstellarMod implements IIDProvider {
 	/**
 	 * Log a new message of the given level for this mod.
 	 *
-	 * @param level   The level in which the message must be shown.
+	 * @param level The level in which the message must be shown.
 	 * @param message The message to show.
 	 */
 	public void log(Level level, String message) {
@@ -164,22 +185,43 @@ public abstract class InterstellarMod implements IIDProvider {
 		registry.setMod(getModObject());
 		registry.getRecipeBuilder();
 
+		// Now call PreInit Phase listeners
+		phaseSets.callPreInitPhaseListeners(Step.PRE);
+
+		phaseSets.callPreInitPhaseListeners(Step.INIT);
+
+		phaseSets.callPreInitPhaseListeners(Step.POST);
+
 		// call event listeners
-		callEventStepListeners(IEventListener.EventStep.PREINIT);
+		callEventStepListeners(Step.PRE);
 	}
 
 	public void onInit(FMLInitializationEvent event) {
 		log(Level.TRACE, "init()");
 
+		// Now call init Phase listeners
+		phaseSets.callInitPhaseListeners(Step.PRE);
+
+		phaseSets.callInitPhaseListeners(Step.INIT);
+
+		phaseSets.callInitPhaseListeners(Step.POST);
+
 		// call event listeners
-		callEventStepListeners(IEventListener.EventStep.INIT);
+		callEventStepListeners(Step.INIT);
 	}
 
 	public void onPostInit(FMLPostInitializationEvent event) {
 		log(Level.TRACE, "postInit()");
 
+		// Now call PreInit Phase listeners
+		phaseSets.callPostInitPhaseListeners(Step.PRE);
+
+		phaseSets.callPostInitPhaseListeners(Step.INIT);
+
+		phaseSets.callPostInitPhaseListeners(Step.POST);
+
 		// call event listeners
-		callEventStepListeners(IEventListener.EventStep.POSTINIT);
+		callEventStepListeners(Step.POST);
 	}
 
 	public boolean hasAvailableUpdate() {
