@@ -13,6 +13,7 @@ import net.minecraft.client.renderer.vertex.DefaultVertexFormats;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
+@SuppressWarnings("unused")
 @SideOnly(Side.CLIENT)
 public class CustomTessellator {
 
@@ -39,7 +40,8 @@ public class CustomTessellator {
 	 */
 	private int vertexCount;
 	/** The first coordinate to be used for the texture. */
-	private double textureU;
+	
+    private double textureU;
 	/** The second coordinate to be used for the texture. */
 	private double textureV;
 	private int brightness;
@@ -156,7 +158,7 @@ public class CustomTessellator {
 	 */
 	private void reset() {
 		this.vertexCount = 0;
-		this.byteBuffer.clear();
+		CustomTessellator.byteBuffer.clear();
 		this.rawBufferIndex = 0;
 		this.addedVertices = 0;
 	}

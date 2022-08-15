@@ -47,8 +47,8 @@ public class ItemBlockSubtype extends ItemBlock {
 	}
 
 	@Override
-	public String getUnlocalizedName(ItemStack stack) {
-		return super.getUnlocalizedName() + getMetadata(stack.getItemDamage());
+	public String getTranslationKey(ItemStack stack) {
+		return super.getTranslationKey() + getMetadata(stack.getItemDamage());
 	}
 
 	@Override

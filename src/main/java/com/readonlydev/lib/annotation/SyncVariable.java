@@ -31,9 +31,8 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
-import javax.activation.UnsupportedDataTypeException;
-
 import com.readonlydev.api.nbt.INBTData;
+import com.readonlydev.lib.exception.UnsupportedDataTypeException;
 
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;

@@ -37,8 +37,8 @@ public class GenUtility {
 	/**
 	 * Calls the function n times, passing in the ith iteration
 	 * 
-	 * @param n
-	 * @param func
+	 * @param n number of times to perform the function
+	 * @param func the function to perform
 	 */
 	public static void performNTimes(int n, Consumer<Integer> func) {
 		for (int i = 0; i < n; i++) {
@@ -125,9 +125,7 @@ public class GenUtility {
 	 * From MapGenEndCity: determines the ground height
 	 */
 	public static int getGroundHeight(BlockPos pos, IChunkGen gen, Rotation rotation) {
-		BlockPos chunk = posToChunk(pos);
 		ChunkPrimer chunkprimer = new ChunkPrimer();
-		// gen.setBlocksInChunk(chunk.getX(), chunk.getZ(), chunkprimer);
 		int i = 5;
 		int j = 5;
 

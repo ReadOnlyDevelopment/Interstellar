@@ -29,7 +29,8 @@ public abstract class ExoplanetBiome extends BiomeGenBaseGC implements IExoplane
 	private final BeachType beachType;
 	private final TerrainBase terrain;
 	private final SurfaceBase surface;
-	private final SurfaceBase surfaceRiver;
+	@SuppressWarnings("unused")
+    private final SurfaceBase surfaceRiver;
 	@Getter
 	private final BiomeData biomeData;
 

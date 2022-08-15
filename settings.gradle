@@ -1,0 +1,10 @@
+pluginManagement {
+    repositories {
+		maven {
+			url = 'https://repo.galacticraft.net/repository/common-proxy/'
+		}
+		maven {
+			url = 'https://repo.galacticraft.net/repository/maven-common/'
+		}
+    }
+}

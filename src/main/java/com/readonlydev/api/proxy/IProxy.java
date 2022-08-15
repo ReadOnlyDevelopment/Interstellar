@@ -84,7 +84,9 @@ public interface IProxy {
 	 * Thrown when a proxy method is called from the wrong side.
 	 */
 	class WrongSideException extends RuntimeException {
-		public WrongSideException(final String message) {
+		private static final long serialVersionUID = 1L;
+
+        public WrongSideException(final String message) {
 			super(message);
 		}
 

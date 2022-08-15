@@ -1,142 +1,188 @@
 buildscript {
-	repositories {
-		mavenCentral()
-		maven {
-			name = "forge"
-			url = "https://files.minecraftforge.net/maven"
-		}
-	}
-	dependencies {
-		classpath 'net.minecraftforge.gradle:ForgeGradle:2.3-SNAPSHOT'
-	}
+    dependencies {
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+    }
 }
 
 plugins {
-	id "se.bjurr.gitchangelog.git-changelog-gradle-plugin" version "1.71.4"
-	id 'org.cadixdev.licenser' version '0.5.1'
-	id 'com.github.kt3k.coveralls' version '2.8.2'
-	id 'org.ajoberstar.grgit' version '3.1.1'
-	id 'eclipse'
-	id 'java'
+    id 'java'
+    id 'eclipse'
+    id 'org.cadixdev.licenser' version '0.6.1'
+    id 'io.freefair.lombok' version '6.5.0.2'
+    id 'wtf.gofancy.fancygradle' version '1.+'
 }
 
-defaultTasks 'cleanBuild'
+apply plugin: 'net.minecraftforge.gradle'
+java.toolchain.languageVersion = JavaLanguageVersion.of(8)
 
-apply plugin: 'net.minecraftforge.gradle.forge'
-
-def build_num = getBuildNumber()
-version = "${mod_version}-build${build_num}"
+version = "${mod_version}"
 group = "${mod_group}"
 archivesBaseName = "${mod_archivesBaseName}"
 
-sourceCompatibility = targetCompatibility = '1.8'
-compileJava {
-	sourceCompatibility = targetCompatibility = '1.8'
+java {
+    withJavadocJar()
 }
 
-System.out.println()
-System.out.println('Java Information')
-System.out.println('- Java:   	   ' + System.getProperty('java.version'))
-System.out.println('- JVM:    	   ' + System.getProperty('java.vm.version') + ' (' + System.getProperty('java.vendor') + ')')
-System.out.println('- Arch:  	   ' + System.getProperty('os.arch'))
-System.out.println()
-System.out.println('Minecraft Information')
-System.out.println('- Minecraft:   ' + "${minecraft_version}".toString())
-System.out.println('- Forge:       ' + "${forge_version}".toString())
-System.out.println('- Mappings:    ' + "${mappings_version}".toString())
-System.out.println()
-System.out.println('Mod Information')
-System.out.println('- ID: 	       ' + "${mod_name}".toString())
-System.out.println('- Name:        ' + "${mod_archivesBaseName}".toString())
-System.out.println('- Version:     ' + "${version}".toString())
-System.out.println()
-System.out.println()
+compileJava {
+    options.encoding = "UTF-8"
+}
 
-apply from: 'gradle/forge.gradle'
-
-apply from: 'gradle/development.gradle'
-apply from: 'gradle/deploy.gradle'
-apply from: 'gradle/versioning.gradle'
-apply from: 'gradle/license.gradle'
-
-//apply from: 'https://raw.githubusercontent.com/ReadOnlyDevelopment/gradle/galacticraft/dev-latest.gradle'
-
-String gcbuild = "261"
-String gcversion = "1.12.2-4.0.2.${gcbuild}"
+configurations {
+    implementation.extendsFrom mod
+    compileOnly.extendsFrom modCompile
+    runtimeOnly.extendsFrom runOnly
+}
 
 repositories {
-	ivy {
-		url "https://micdoodle8.com/new-builds/"
-		layout 'pattern', {
-			artifact "[organization]/${gcbuild}/[module]-[revision].jar"
-		}
-		metadataSources {
-			artifact()
-		}
-	}
+    mavenCentral()
+    maven {
+        name 'galacticraft'
+        url 'https://repo.galacticraft.net/repository/maven' 
+    }
 }
 
 dependencies {
-	compile "GC-1.12-dev:GalacticraftCore-Dev:${gcversion}"
-	compile "GC-1.12-dev:Galacticraft-API:${gcversion}"
-	compile "GC-1.12-dev:Galacticraft-Planets-Dev:${gcversion}"
-	compile "GC-1.12-dev:MicdoodleCore-Dev:${gcversion}"
+    minecraft "net.minecraftforge:forge:${mc_version}-${forge_version}"
+    mod fg.deobf('dev.galacticraft:galacticraft-legacy:4.0.3')
 }
 
-String getBuildNumber() {
-	def versionFile = file('version.properties')
-	if (versionFile.canRead()) {
-		Properties versionProps = new Properties()
-		versionProps.load(new FileInputStream(versionFile))
-		return versionProps['build_num'].toString()
-	}
-	return "0"
+minecraft {
+    mappings channel: "${mapping_channel}", version: "${mapping_version}"
+
+    accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+    runs {
+        client {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+            if (project.hasProperty('uuid'))
+                args '--uuid', project.getProperty('uuid')
+            if (project.hasProperty('username'))
+                args '--username', project.getProperty('username')
+        }
+        server {
+            workingDirectory project.file('run')
+            property 'forge.logging.markers', 'REGISTRIES'
+            property 'forge.logging.console.level', 'debug'
+        }
+    }
 }
 
-task incrementBuild {
-	doFirst {
-		def versionFile = file('version.properties')
-		if (versionFile.canRead()) {
-			Properties versionProps = new Properties()
-			versionProps.load(new FileInputStream(versionFile))
-			def num = versionProps['build_num'].toInteger() + 1
-			println("incrementing BuildNumber to: " + num)
-			versionProps['build_num'] = num.toString()
-			versionProps.store(versionFile.newWriter(), null)
-		} else {
-			println("version.properties file not found! Ignoring.")
-		}
-	}
+fancyGradle {
+    patches {
+        resources
+        coremods
+        asm
+    }
 }
 
-import static groovy.io.FileType.*
+apply from: 'gradle/resources.gradle'
 
-task copyToDependentLib {
-	group = 'interstellar-api'
-	description = 'Copies the Dev jar to specified directory'
-	doLast {
-		def devFile = '';
-		def dir = new File("${buildDir}/libs")
-		dir.eachFileRecurse(FILES) {
-			if(it.name.contains('dev')) {
-				devFile = it
-			}
-		}
-		copy {
-			from devFile
-			into "C:/Users/rom/Documents/Interstellar-Exoplanets/lib"
-		}
-	}
+clean {
+    def filteredDelete = new HashSet<>()
+    for (def toDelete : getDelete()) {
+        for (def f : file(toDelete).listFiles()) {
+            if (f.getName() != "fg_cache") {
+                filteredDelete.add(f)
+            }
+        }
+    }
+    setDelete(filteredDelete)
 }
 
-task cleanBuild {
-	group = 'build'
-	description = 'Run Clean before calling Build'
-	dependsOn 'clean'
-	dependsOn 'build'
-	tasks.findByName('build').mustRunAfter 'clean'
+license {
+    ignoreFailures = true
+    ext.year = Calendar.getInstance().get(Calendar.YEAR)
+    ext.company = "ReadOnly Development"
+    exclude '**/*.lang'
+    exclude '**/*.mcmeta'
+    exclude '**/*.info'
+    exclude '**/*.cfg'
+    
+    matching(includes: ['**/lib/**/*.java']) {
+        header = project.file("LICENSE-LIB-header.txt")
+
+    }
+    matching(includes: ['**/api/**/*.java']) {
+        header =  project.file("LICENSE-API-header.txt")
+    }
+}
+
+if (JavaVersion.current().isJava8Compatible()) {
+    tasks.withType(Javadoc) {
+        options {
+            addStringOption('Xdoclint:none', '-quiet')
+            source = sourceSets.main.allJava
+        }
+    }
+}
+
+def setMainManifestProps = { Manifest manifest->
+    manifest.mainAttributes (
+            'Maven-Artifact': "${project.group}:${project.archivesBaseName}:${project.version}",
+            'Timestamp': System.currentTimeMillis(),
+            'Specification-Title': 'Interstellar',
+            'Specification-Vendor': 'ReadOnly Development',
+            'Specification-Version': '1',
+            'Implementation-Title': 'Interstellar',
+            'Implementation-Version': project.version,
+            'Implementation-Vendor' :'ReadOnly Development',
+            'Implementation-Timestamp': new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
+            'FMLAT': 'accesstransformer.cfg',
+            'Built-On-Java': "${System.getProperty('java.vm.version')} (${System.getProperty('java.vm.vendor')})",
+            'Built-On': "${project.mc_version}-${project.forge_version}"
+            )
+}
+
+jar {
+    manifest(setMainManifestProps)
+}
+
+jar.finalizedBy('reobfJar')
+
+task sourceJar(type: Jar, dependsOn: classes) {
+    duplicatesStrategy(DuplicatesStrategy.FAIL)
+    archiveClassifier.set('sources')
+    archiveVersion.set("${mc_version}-${version}")
+    from sourceSets.main.allSource
+}
+
+task deobfJar(type: Jar) {
+    duplicatesStrategy(DuplicatesStrategy.FAIL)
+    from sourceSets.main.allJava
+    from sourceSets.main.output
+    archiveClassifier.set('deobf')
+    manifest(setMainManifestProps)
+}
+
+//task javadocJar(type: Jar, dependsOn: javadoc) {
+//    duplicatesStrategy(DuplicatesStrategy.FAIL)
+//    from javadoc.destinationDir
+//    archiveClassifier.set('javadoc')
+//}
+
+artifacts {
+    archives deobfJar
+    archives sourceJar
+    archives javadocJar
+}
+
+apply from: 'gradle/maven.gradle'
+
+import net.minecraftforge.gradle.common.tasks.*
+
+task signJar(type: SignJar, dependsOn: 'reobfJar') {
+    onlyIf {
+        project.hasProperty('keyStore')
+    }
+
+    keyStore = project.findProperty('keyStore')
+    alias = project.findProperty('keyStoreAlias')
+    storePass = project.findProperty('keyStorePass')
+    keyPass = project.findProperty('keyStoreKeyPass')
+    inputFile = jar.archivePath
+    outputFile = jar.archivePath
 }
 
 build.dependsOn signJar
-build.finalizedBy incrementBuild // only increment on successful builds
-incrementBuild.finalizedBy copyToDependentLib

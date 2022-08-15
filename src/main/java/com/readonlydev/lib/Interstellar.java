@@ -63,7 +63,7 @@ public class Interstellar extends InterstellarMod {
 	public Interstellar() {
 		super(Interstellar.class);
 		_instance = this;
-		log = new Log(this, 11/* Integer.valueOf(LibInfo.BUILD) */);
+		log = new Log(this);
 		network = new InterstellarNetwork("Interstellar");
 		inObfEnv = !(boolean) Launch.blackboard.get("fml.deobfuscatedEnvironment");
 		InterstellarGuide.preInitGuideLoader();

@@ -1,7 +1,5 @@
 package com.readonlydev.lib.world.surface;
 
-import java.util.Random;
-
 import com.readonlydev.lib.world.ExoplanetWorld;
 
 import net.minecraft.block.Block;
@@ -20,8 +18,6 @@ public class SurfaceGeneric extends SurfaceBase {
 	@Override
 	public void paintTerrain(ChunkPrimer primer, int i, int j, int x, int z, int depth, ExoplanetWorld exoWorld,
 			float[] noise, float river, Biome[] base) {
-
-		Random rand = exoWorld.rand();
 
 		for (int k = 255; k > -1; k--) {
 			Block b = primer.getBlockState(x, k, z).getBlock();

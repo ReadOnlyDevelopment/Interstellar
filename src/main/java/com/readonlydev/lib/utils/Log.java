@@ -1,6 +1,7 @@
 package com.readonlydev.lib.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -14,22 +15,19 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.readonlydev.api.log.ILog;
+import com.readonlydev.lib.Interstellar;
 
 import lombok.Getter;
 import net.minecraftforge.fml.common.Mod;
-import scala.actors.threadpool.Arrays;
 
 public class Log implements ILog {
 	private static final Map<String, Log> LOGGER_BY_MODNAME = new HashMap<>();
 
 	@Getter
 	private final Logger logger;
-	@Getter
-	private final int buildNumber;
 	private String lastDebugOutput = "";
 
-	public Log(Object modClass, int buildBumber) {
-		this.buildNumber = buildBumber;
+	public Log(Object modClass) {
 		String name = modClass.getClass().getAnnotation(Mod.class).name();
 		this.logger = LogManager.getLogger(name);
 		LOGGER_BY_MODNAME.put(name, this);
@@ -59,13 +57,12 @@ public class Log implements ILog {
 	@Override
 	public void debug(String msg, Object... params) {
 		this.logger.debug(msg, params);
-
-		if (this.buildNumber == 0) {
-			String newOutput = this.logger.getMessageFactory().newMessage(msg, params).getFormattedMessage();
-			if (!newOutput.equals(lastDebugOutput)) {
-				info("[DEBUG] " + newOutput);
-				this.lastDebugOutput = newOutput;
-			}
+		if(Interstellar.inObfEnv) {
+            String newOutput = this.logger.getMessageFactory().newMessage(msg, params).getFormattedMessage();
+            if (!newOutput.equals(lastDebugOutput)) {
+                info("[DEBUG] " + newOutput);
+                this.lastDebugOutput = newOutput;
+            }
 		}
 	}
 

@@ -24,8 +24,8 @@ import com.readonlydev.lib.celestial.SpaceCalculations;
 public class Temperature {
 
 	public static enum Unit {
-		FAHRENHEIT("°F"),
-		CELSIUS("°C"),
+		FAHRENHEIT("Â°F"),
+		CELSIUS("Â°C"),
 		KELVIN("K");
 
 		private final String symbol;

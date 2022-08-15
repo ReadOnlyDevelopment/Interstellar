@@ -51,10 +51,10 @@ public class WorldGenVinesRTG extends WorldGenerator {
 
             if (worldIn.isAirBlock(position)) {
 
-                Block north = worldIn.getBlockState(position.north()).getBlock();
-                Block south = worldIn.getBlockState(position.south()).getBlock();
-                Block east = worldIn.getBlockState(position.east()).getBlock();
-                Block west = worldIn.getBlockState(position.west()).getBlock();
+//                Block north = worldIn.getBlockState(position.north()).getBlock();
+//                Block south = worldIn.getBlockState(position.south()).getBlock();
+//                Block east = worldIn.getBlockState(position.east()).getBlock();
+//                Block west = worldIn.getBlockState(position.west()).getBlock();
 
                 for (EnumFacing enumfacing : EnumFacing.Plane.HORIZONTAL.facings()) {
 

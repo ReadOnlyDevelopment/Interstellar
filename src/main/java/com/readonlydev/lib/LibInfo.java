@@ -24,6 +24,5 @@ public final class LibInfo {
 	public static final String ID = "interstellar";
 	public static final String NAME = "Interstellar";
 	public static final String VERSION = "${version}";
-	public static final String BUILD = "${build}";
 	public static final String FINGERPRINT = "${fingerprint}";
 }

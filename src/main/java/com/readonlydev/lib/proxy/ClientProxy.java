@@ -71,7 +71,7 @@ public class ClientProxy implements IProxy {
 		if (context.side.isClient()) {
 			return MINECRAFT;
 		} else {
-			return context.getServerHandler().player.mcServer;
+			return context.getServerHandler().player.getServer();
 		}
 	}
 

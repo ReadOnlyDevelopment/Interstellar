@@ -19,6 +19,8 @@
 
 package com.readonlydev.lib.guide.client;
 
+import java.lang.reflect.InvocationTargetException;
+
 import com.readonlydev.api.mod.IIDProvider;
 import com.readonlydev.lib.guide.client.element.Guide;
 
@@ -33,8 +35,8 @@ public abstract class GuideEntry implements IIDProvider, Comparable<GuideEntry> 
 
 	public Guide getGuide() {
 		try {
-			return this.guideClass.newInstance();
-		} catch (InstantiationException | IllegalAccessException e) {
+			return this.guideClass.getDeclaredConstructor().newInstance();
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 			e.printStackTrace();
 			return null;
 		}

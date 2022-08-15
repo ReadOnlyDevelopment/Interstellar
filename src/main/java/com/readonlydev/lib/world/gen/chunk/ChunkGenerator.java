@@ -38,9 +38,7 @@ public class ChunkGenerator implements IChunkGen {
 	public final ExoplanetWorld exoWorld;
 	private final ExoChunkGenSettings settings;
 	private final World world;
-	private final LimitedArrayCacheMap<ChunkPos, ChunkLandscape> landscapeCache = new LimitedArrayCacheMap<>(1024);// cache
-																													// ChunkLandscape
-																													// objects
+	private final LimitedArrayCacheMap<ChunkPos, ChunkLandscape> landscapeCache = new LimitedArrayCacheMap<>(1024);
 	private final int sampleSize = 8;
 	private final int sampleArraySize = sampleSize * 2 + 5;
 	private final int[] biomeData = new int[sampleArraySize * sampleArraySize];
@@ -69,7 +67,8 @@ public class ChunkGenerator implements IChunkGen {
 		setWeightings();
 	}
 
-	@Override
+	@SuppressWarnings("unused")
+    @Override
 	public Chunk generateChunk(final int cx, final int cz) {
 
 		final ChunkPos chunkPos = new ChunkPos(cx, cz);

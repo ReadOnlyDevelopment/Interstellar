@@ -48,11 +48,12 @@ public class SpaceCalculations {
 	// good maxSpeed
 
 	/**
-	 * Should calculate a thermal level depending on that body's distance from the star in it's system
-	 *
-	 * @param body
-	 * @return
-	 */
+     * Should calculate a thermal level depending on that body's distance from the star in it's system.
+     *
+     * @param  body body
+     * 
+     * @return      the thermal level
+     */
 	public static float getThermalLevel(CelestialBody body) {
 		if (body instanceof Star) {
 			return maxTemperature;
@@ -69,6 +70,13 @@ public class SpaceCalculations {
 		return temperature;
 	}
 
+	/**
+     * Gets the parent planet.
+     *
+     * @param  body body
+     * 
+     * @return      the parent planet
+     */
 	@Deprecated
 	public static CelestialBody getParentPlanet(CelestialBody body) {
 		if (body == null) {
@@ -130,17 +138,29 @@ public class SpaceCalculations {
 	}
 
 	/**
-	 * @param a1 - The first angle.
-	 * @param a2 - The second angle.
-	 * @param p  - A float between 0.0 and 1.0 that determines the progress between the two angles.
-	 * @return a rotation angle that is between two other rotation angles. 'a1' and 'a2' are the angles between which to interpolate. Example: angle1 = 30, angle2 = 50, progress = 0.5, return = 40
-	 */
+     * Interpolate rotation.
+     *
+     * @param  a1 - The first angle.
+     * @param  a2 - The second angle.
+     * @param  p  - A float between 0.0 and 1.0 that determines the progress between the two angles.
+     * 
+     * @return    a rotation angle that is between two other rotation angles. 'a1' and 'a2' are the angles between which to interpolate. Example: angle1 = 30, angle2 = 50, progress = 0.5, return = 40
+     */
 	public static float interpolateRotation(float a1, float a2, float p) {
 		float angle = a2 - a1;
 		angle = angle < -180F ? angle += 360F : angle;
 		return a1 + (p * (angle = angle >= 180F ? angle -= 360F : angle));
 	}
 
+	/**
+     * Gets the random number in range.
+     *
+     * @param  rand rand
+     * @param  min  min
+     * @param  max  max
+     * 
+     * @return      the random number in range
+     */
 	public static int getRandomNumberInRange(Random rand, int min, int max) {
 		if (min >= max) {
 			throw new IllegalArgumentException("max must be greater than min");
@@ -149,6 +169,17 @@ public class SpaceCalculations {
 		return (isBetween(v, min, max, true)) ? v : 0;
 	}
 
+	/**
+     * Checks if is between.
+     *
+     * @param  <T>       the generic type
+     * @param  i         i
+     * @param  min       min
+     * @param  max       max
+     * @param  inclusive inclusive
+     * 
+     * @return           true, if is between
+     */
 	public static <T extends Number> boolean isBetween(T i, T min, T max, boolean inclusive) {
 		if (i instanceof Integer) {
 			if (inclusive == true) {
@@ -173,6 +204,16 @@ public class SpaceCalculations {
 		}
 	}
 
+	/**
+     * Checks if is more than.
+     *
+     * @param  <T>       the generic type
+     * @param  i         i
+     * @param  max       max
+     * @param  inclusive inclusive
+     * 
+     * @return           true, if is more than
+     */
 	public static <T extends Number> boolean isMoreThan(T i, T max, boolean inclusive) {
 		if (i instanceof Integer) {
 			return inclusive ? i.intValue() >= max.intValue() : i.intValue() > max.intValue();
@@ -185,6 +226,16 @@ public class SpaceCalculations {
 		}
 	}
 
+	/**
+     * Checks if is less than.
+     *
+     * @param  <T>       the generic type
+     * @param  i         i
+     * @param  min       min
+     * @param  inclusive inclusive
+     * 
+     * @return           true, if is less than
+     */
 	public static <T extends Number> boolean isLessThan(T i, T min, boolean inclusive) {
 		if (i instanceof Integer) {
 			return inclusive ? i.intValue() <= min.intValue() : i.intValue() < min.intValue();

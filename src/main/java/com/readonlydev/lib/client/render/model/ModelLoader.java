@@ -37,7 +37,7 @@ public class ModelLoader {
 	 */
 	public static IModel loadModel(ResourceLocation resource)
 			throws IllegalArgumentException, InvalidModelFormatException {
-		String name = resource.getResourcePath();
+		String name = resource.getPath();
 		int i = name.lastIndexOf('.');
 		if (i == -1) {
 			Interstellar.log.error("The resource name %s is not valid", resource);

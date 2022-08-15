@@ -251,7 +251,7 @@ public class ColorRGB {
 	 * @return A Color object based on str
 	 * @throws NumberFormatException If the string cannot be parsed
 	 * @throws NullPointerException  If the string is null
-	 * @implNote Uses {@link UnsignedInts#parseUnsignedInt(String, int)} for parsing
+	 * @apiNote Uses {@link UnsignedInts#parseUnsignedInt(String, int)} for parsing
 	 */
 	public static ColorRGB parse(String str) {
 		// Named color?

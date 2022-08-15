@@ -141,11 +141,11 @@ public class TPCommand extends CommandTeleport {
 
 	public static CelestialBody getReachableCelestialBodiesForDimensionID(int id) {
 		List<CelestialBody> celestialBodyList = Lists.newArrayList();
-		celestialBodyList.addAll(GalaxyRegistry.getRegisteredMoons().values());
-		celestialBodyList.addAll(GalaxyRegistry.getRegisteredPlanets().values());
+		celestialBodyList.addAll(GalaxyRegistry.getMoons());
+		celestialBodyList.addAll(GalaxyRegistry.getPlanets());
 
 		for (CelestialBody cBody : celestialBodyList) {
-			if (cBody.getReachable()) {
+			if (cBody.isReachable()) {
 				if (cBody.getDimensionID() == id) {
 					return cBody;
 				}
@@ -176,12 +176,12 @@ public class TPCommand extends CommandTeleport {
 			}
 		}
 		ArrayList<CelestialBody> cBodyList = new ArrayList<>();
-		cBodyList.addAll(GalaxyRegistry.getRegisteredPlanets().values());
-		cBodyList.addAll(GalaxyRegistry.getRegisteredMoons().values());
+		cBodyList.addAll(GalaxyRegistry.getPlanets());
+		cBodyList.addAll(GalaxyRegistry.getMoons());
 
 		for (CelestialBody body : cBodyList) {
-			if (!body.getReachable()) {
-				map.put(body.getLocalizedName() + "*", body.getDimensionID());
+			if (!body.isReachable()) {
+				map.put(body.getTranslationKey() + "*", body.getDimensionID());
 			}
 		}
 

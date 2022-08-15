@@ -17,7 +17,6 @@ import com.readonlydev.lib.Interstellar;
 
 import net.minecraft.util.JsonUtils;
 
-@SuppressWarnings("WeakerAccess")
 public final class ExoChunkGenSettings {
 
 	// TODO: [Generator settings] Requires an extension of
@@ -573,14 +572,11 @@ public final class ExoChunkGenSettings {
 
 			try {
 // TODO: [Generator settings] Disable fixedBiome and biomeSize for now as they require modification to the GenLayer classes to work.
-//              settings.fixedBiome             = JsonUtils.getInt(json,    "fixedBiome",           settings.fixedBiome);
-//              settings.biomeSize              = JsonUtils.getInt(json,    "biomeSize",            settings.biomeSize);
 				settings.seaLevel = JsonUtils.getInt(json, "seaLevel", settings.seaLevel);
 
 				settings.useBoulders = JsonUtils.getBoolean(json, "useBoulders", settings.useBoulders);
 				settings.boulderMult = JsonUtils.getFloat(json, "boulderMult", settings.boulderMult);
 				settings.sandDuneHeight = JsonUtils.getInt(json, "sandDuneHeight", settings.sandDuneHeight);
-//              settings.snowDuneHeight         = JsonUtils.getInt(json,    "snowDuneHeight",       settings.snowDuneHeight);
 				settings.useSnowLayers = JsonUtils.getBoolean(json, "useSnowLayers", settings.useSnowLayers);
 				settings.snowLayerTemp = JsonUtils.getFloat(json, "snowLayerTemp", settings.snowLayerTemp);
 
@@ -705,15 +701,11 @@ public final class ExoChunkGenSettings {
 
 			JsonObject json = new JsonObject();
 
-// TODO: [Generator settings] Disable fixedBiome and biomeSize for now as they require modification to the GenLayer classes to work.
-//          json.addProperty("fixedBiome",           factory.fixedBiome);
-//          json.addProperty("biomeSize",            factory.biomeSize);
 			json.addProperty("seaLevel", factory.seaLevel);
 
 			json.addProperty("useBoulders", factory.useBoulders);
 			json.addProperty("boulderMult", factory.boulderMult);
 			json.addProperty("sandDuneHeight", factory.sandDuneHeight);
-//          json.addProperty("snowDuneHeight",       factory.snowDuneHeight);
 			json.addProperty("useSnowLayers", factory.useSnowLayers);
 			json.addProperty("snowLayerTemp", factory.snowLayerTemp);
 

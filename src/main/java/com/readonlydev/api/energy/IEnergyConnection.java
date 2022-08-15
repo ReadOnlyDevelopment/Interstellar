@@ -11,7 +11,7 @@ import net.minecraft.util.EnumFacing;
  * transportation blocks. This is intended for blocks which generate energy but
  * do not accept it; otherwise just use IEnergyHandler.
  *
- * Note that {@link IEnergyHandler} is an extension of this.
+ * Note that {@linkplain IEnergyHandler} is an extension of this.
  *
  * @author King Lemming
  */

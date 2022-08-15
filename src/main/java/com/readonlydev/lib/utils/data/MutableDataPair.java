@@ -49,9 +49,9 @@ public class MutableDataPair<FIRST, SECOND> extends DataPair<FIRST, SECOND> {
 	}
 
 	/**
-	 * Sets the left element of the pair.
+	 * Sets the first element of the pair.
 	 * 
-	 * @param left the new value of the left element, may be null
+	 * @param first the new value of the first element, may be null
 	 */
 	public void setFirst(final FIRST first) {
 		this.first = first;
@@ -66,9 +66,9 @@ public class MutableDataPair<FIRST, SECOND> extends DataPair<FIRST, SECOND> {
 	}
 
 	/**
-	 * Sets the right element of the pair.
+	 * Sets the second element of the pair.
 	 * 
-	 * @param right the new value of the right element, may be null
+	 * @param second the new value of the second element, may be null
 	 */
 	public void setSecond(final SECOND second) {
 		this.second = second;
@@ -77,8 +77,8 @@ public class MutableDataPair<FIRST, SECOND> extends DataPair<FIRST, SECOND> {
 	/**
 	 * Sets the {@code Map.Entry} value. This sets the right element of the pair.
 	 * 
-	 * @param value the right value to set, not null
-	 * @return the old value for the right element
+	 * @param value the second value to set, not null
+	 * @return the old value for the second element
 	 */
 	@Override
 	public SECOND setValue(final SECOND value) {
